@@ -347,19 +347,104 @@ We test on a classic 2D advection benchmark: two Taylor–Green–style vortices
 *Figure 7: Density magnitude snapshots of the two‑vortex field at step 100.*
 
 - Matching INSR’s accuracy demands an **enormous** memory spike ($$\times500$$).  
-- INSR excels at capturing **multiscale** features that simple grids cannot resolve under tight budgets.  
-
+- INSR excels at capturing **multiscale** features that simple grids cannot resolve under tight budgets.
 
 ---
 
-## 📈 Benefits
+# 2. Incompressible Euler Equations
 
-| ✅ Advantages | ❌ Limitations |
-|--------------|----------------|
-| Mesh-free | Slower runtime |
-| Memory efficient | Requires tuning |
-| High spatial accuracy | Not real-time yet |
-| Easy to integrate with classical schemes | More compute per step |
+The incompressible Euler equations govern the motion of an ideal (zero-viscosity), divergence‑free fluid. They take the form:
+
+$$
+\rho_f\!\biggl(\frac{\partial \mathbf{u}}{\partial t} + \mathbf{u}\cdot\nabla\mathbf{u}\biggr)
+\;=\;-\,\nabla p \;+\;\rho_f\,\mathbf{g},
+\quad
+\nabla\cdot\mathbf{u}=0,
+$$
+
+where:
+
+- **\(\mathbf{u}(x,t)\)** is the velocity field,  
+- **\(p(x,t)\)** is the pressure that enforces incompressibility,  
+- **\(\rho_f\)** is the fluid density (here \(\rho_f=1\)),  
+- **\(\mathbf{g}\)** is external body force (here \(\mathbf{g}=0\)).  
+
+Even without viscosity, the nonlinear advection term \(\mathbf{u}\!\cdot\nabla\mathbf{u}\) together with the divergence‑free constraint makes this a challenging PDE to solve accurately, especially when capturing fine vortex structures under tight memory constraints.
+
+### 2.1 Operator‑Splitting Time Integration
+
+We adopt the classic Chorin‑style operator‑splitting scheme, which breaks the nonlinear, coupled system into three linear substeps per timestep:
+
+![Operator Splitting Workflow]({{ site.baseurl }}/images/img_insr_9.png)
+*Figure 8: Chorin-Style Operator-Splitting Workflow*
+
+1. **Advection (semi‑Lagrangian):**  
+   $$
+   I_{\mathrm{adv}} = \bigl\|\mathbf{u}_{\mathrm{adv}}^{n+1}(x)
+   - \mathbf{u}^n\bigl(x - \Delta t\,\mathbf{u}^n(x)\bigr)\bigr\|_2^2.
+   $$
+   We backtrack each point $x$ by $\Delta t\,\mathbf{u}^n(x)$, evaluating the MLP directly at the footpoint (no interpolation).
+
+2. **Pressure Projection:**  
+   $$
+   I_{\mathrm{pro}} = \bigl\|\nabla^2 p^{\,n+1}(x)
+   - \nabla\!\cdot\mathbf{u}_{\mathrm{adv}}^{n+1}(x)\bigr\|_2^2.
+   $$
+   Optimizing this enforces $\nabla\!\cdot \mathbf{u}=0$ by solving for the pressure MLP.
+
+3. **Velocity Correction:**  
+   $$
+   I_{\mathrm{cor}} = \bigl\|\mathbf{u}^{n+1}(x)
+   - \bigl(\mathbf{u}_{\mathrm{adv}}^{n+1}(x) - \nabla p^{\,n+1}(x)\bigr)\bigr\|_2^2.
+   $$  
+   The final velocity is obtained by subtracting the learned pressure gradient.
+
+Each substep minimizes its residual over a random batch of points $\mathcal{M}\subset\Omega$ using Adam.
+
+### 2.2 Taylor–Green Vortex Benchmark
+
+The Taylor–Green vortex is a classic analytical solution to the incompressible Euler equations in two dimensions. It’s widely used as a benchmark because:
+
+1. **Closed-form solution:**
+   You know the exact velocity field at any time, so you can measure numerical error directly.
+
+2. **No external forcing or viscosity:**
+   With ρ=1 and g=0, the equations reduce to pure advection plus pressure projection, making it a clean test of your solver’s ability to handle non-linear advection and maintain incompressibility.
+
+3. **Multiscale challenge:**
+   Although the initial condition is smooth, the interacting vortices place stress on your spatial discretization: if your mesh (or neural representation) is too coarse or too diffusive, the smaller-scale features will wash out or degrade over time.
+
+You know the exact velocity field at any time, so you can measure numerical error directly.
+We validate on the 2D Taylor–Green vortex (zero viscosity) with analytical solution  
+$$
+\mathbf{u}(x,y,t) = \bigl(\sin x\cos y,\,-\cos x\sin y\bigr), 
+\quad (x,y)\in[0,2\pi]^2.
+$$  
+Timestep: $$\Delta t=0.05$$, 100 steps to $$t=5\,$$s.  
+
+Both INSR and the coarse grid use ~25 KB for the velocity field:
+- **INSR:** SIREN with $$\alpha=3$$ hidden layers, $$\beta=32$$ neurons each.
+- **Grid:** $48{\times}48$ finite‑difference grid with the same operator‑splitting.
+
+### Quantitative & Qualitative Results
+
+#### Error Growth & Velocity Fields
+
+![Euler Error & Fields]({{ site.baseurl }}/images/img_insr_10.png)  
+*Figure 9: (Left) Mean squared error over 100 timesteps.  
+(Right) Velocity magnitude at final step: ground truth, INSR, and grid.*
+
+- **INSR (blue):** MSE remains below $5\times10^{-4}$.  
+- **Grid (green):** Error climbs above $4\times10^{-3}$, nearly an order of magnitude larger.  
+- **Field snapshots:** INSR preserves the checkerboard’s fine peaks and troughs; the grid smooths them significantly.
+
+#### Memory–Error–Time Trade‑Off
+
+![Euler Quant Table]({{ site.baseurl }}/images/img_insr_11.png)  
+*Figure 10: Quantitative comparison.*
+
+- Achieving INSR’s final error on the grid would require **12 MB** vs. **27 KB**, a **450×** memory increase.  
+- INSR excels at capturing complex, divergence‑free flows under tight memory constraints.
 
 ---
 
