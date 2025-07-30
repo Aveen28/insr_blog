@@ -6,7 +6,7 @@
 name: Aveen Vas
 
 # Short bio or description (displayed in the header)
-description: M.Sc. Computer Science (Autonomous Systems), Universität Stuttgart
+description: M.Sc. Computer Science, Universität Stuttgart
 
 # URL of your avatar or profile pic (you could use your GitHub profile pic)
 avatar: https://avatars.githubusercontent.com/Aveen28
@@ -18,14 +18,14 @@ avatar: https://avatars.githubusercontent.com/Aveen28
 # Includes an icon in the footer for each username you enter
 footer-links:
   dribbble:
-  email:
+  email: vasaveen@gmail.com
   facebook:
   flickr:
-  github: barryclark/jekyll-now
+  github: Aveen28
   instagram:
-  linkedin:
+  linkedin: Aveen Vas
   pinterest:
-  rss: # just type anything here for a working RSS icon
+  rss: true
   twitter: jekyllrb
   stackoverflow: # your stackoverflow profile, e.g. "users/50476/bart-kiers"
   youtube: # channel/<your_long_string> or user/<user-name>
