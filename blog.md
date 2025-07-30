@@ -268,7 +268,7 @@ To isolate spatial discretization effects, **both** INSR and the finite‑differ
 
 #### Error over Time & Wave Profiles
 
-![1D Transport: MAE & Wave Snapshots]({{ site.baseurl }}/images/img_inse__5.png)  
+![1D Transport: MAE & Wave Snapshots]({{ site.baseurl }}/images/img_inser__5.png)  
 *Figure 4: (Left) Mean absolute error over time. (Center) Profiles at $$t=3\,$$s. (Right) Profiles at $$t=12\,$$s.*
 
 1. **MAE Curves (left panel):**  
@@ -287,7 +287,7 @@ To isolate spatial discretization effects, **both** INSR and the finite‑differ
   
 #### Memory–Error–Time Trade‑Off
 
-![1D Transport: Quantitative Table]({{ site.baseurl }}/images/img_inse_6.png)  
+![1D Transport: Quantitative Table]({{ site.baseurl }}/images/img_insr_6.png)  
 *Figure 5: Solution profiles of the 1D Gaussian pulse at $$t=3\,$$s (left) and $$t=12\,$$s (right), showing how INSR + midpoint (blue) preserves the amplitude and shape.*
 
 - To achieve the **same** final MAE of ~$$0.003$$, the grid must increase memory by **8×**.  
@@ -325,7 +325,7 @@ We test on a classic 2D advection benchmark: two Taylor–Green–style vortices
 
 #### Error over Time & Density Snapshots
 
-![2D Transport: MSE & Density Snapshots]({{ site.baseurl }}/images/img_inse_7.png)  
+![2D Transport: MSE & Density Snapshots]({{ site.baseurl }}/images/img_insr_7.png)  
 *Figure 6: Mean squared error over 100 timesteps for the 2D Taylor–Green–style two‑vortex advection, comparing INSR (blue) to the coarse grid solver (green).*
 
 1. **MSE Curves (left):**  
@@ -338,7 +338,7 @@ We test on a classic 2D advection benchmark: two Taylor–Green–style vortices
 
 #### Memory–Error–Time Trade‑Off
 
-![2D Transport: Quantitative Table]({{ site.baseurl }}/images/img_inse_8.png)  
+![2D Transport: Quantitative Table]({{ site.baseurl }}/images/img_insr_8.png)  
 *Figure 7: Density magnitude snapshots of the two‑vortex field at step 100.*
 
 - Matching INSR’s accuracy demands an **enormous** memory spike ($$\times500$$).  
