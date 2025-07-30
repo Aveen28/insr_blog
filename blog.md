@@ -437,8 +437,7 @@ Both INSR and the coarse grid use ~25 KB for the velocity field:
 #### Error Growth & Velocity Fields
 
 ![Euler Error & Fields]({{ site.baseurl }}/images/img_insr_10.png)  
-*Figure 7: (Left) Mean squared error over 100 timesteps.  
-(Right) Velocity magnitude at final step: ground truth, INSR, and grid.*
+*Figure 7: (Left) Mean squared error over 100 timesteps. (Right) Velocity magnitude at final step: ground truth, INSR, and grid.*
 
 - **INSR (blue):** MSE remains below $$5\times10^{-4}$$.  
 - **Grid (green):** Error climbs above $$4\times10^{-3}$$, nearly an order of magnitude larger.  
