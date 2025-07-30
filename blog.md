@@ -215,16 +215,20 @@ Despite its linearity, discretizing this equation on a mesh often introduces **n
 ### Time Integrators
 
 **Midpoint Rule** (second‑order, energy preserving):  
+
 $$
 u^{n+1}(x) = u^n(x) \;+\; \Delta t\,\bigl[a\cdot\nabla\bigl(\tfrac{u^n(x)+u^{n+1}(x)}{2}\bigr)\bigr].
 $$
+
 - On the grid, this is a linear solve per step.  
 - In INSR, we **optimize** $$\theta$$ so that the above residual is minimized over a set of sample points $$\mathcal{M}$$.
 
 **Implicit Euler** (first‑order, dissipative):  
+
 $$
 u^{n+1}(x) = u^n(x) \;+\; \Delta t\,\bigl[a\cdot\nabla u^{n+1}(x)\bigr].
 $$
+
 - We include this variant (“Ours–implicit”) to illustrate the effect of artificial damping.
 
 Below, we evaluate INSR on two canonical testbeds: a 1D Gaussian pulse and a 2D two‑vortex flow.
@@ -268,7 +272,7 @@ To isolate spatial discretization effects, **both** INSR and the finite‑differ
 
 #### Error over Time & Wave Profiles
 
-![1D Transport: MAE & Wave Snapshots]({{ site.baseurl }}/images/img_inser__5.png)  
+![1D Transport: MAE & Wave Snapshots]({{ site.baseurl }}/images/img_insr__5.png)  
 *Figure 4: (Left) Mean absolute error over time. (Center) Profiles at $$t=3\,$$s. (Right) Profiles at $$t=12\,$$s.*
 
 1. **MAE Curves (left panel):**  
