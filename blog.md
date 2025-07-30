@@ -28,7 +28,7 @@ This mesh‑free approach brings three standout benefits:
 
 In this post, we’ll dive into how INSRs work, explore their integration with classic time‑stepping methods, and showcase benchmark results on advection, turbulent vortex flows, and nonlinear elastic deformations. While INSRs may demand more computation per time step, they deliver higher accuracy, lower memory usage, and a simplicity of implementation that opens new doors for scientific simulation. Let’s explore this exciting frontier in mesh‑free numerical methods.  
 
----
+***
 
 ## 🌌 What Is an Implicit Neural Spatial Representation (INSR)?
 
