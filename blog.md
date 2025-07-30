@@ -120,6 +120,7 @@ Because the network’s weights implicitly define the field everywhere, memory u
 ### Time Integration
 
 Given the network weights $$\{\theta^k\}_{k=0}^n$$ at previous steps, we obtain the next weights $$\theta^{n+1}$$ by solving:
+
 $$
 \theta^{n+1} \;=\; 
 \arg\min_{\theta}
@@ -129,6 +130,7 @@ $$
 \{\nabla f_{\theta^k}(x)\}_{k=0}^{n+1},\,\ldots\bigr)
 \quad,
 $$
+
 where $$\mathcal{I}$$ is the discrete‐time integrator objective (e.g., explicit/implicit Euler, midpoint, variational, or operator splitting), and $$\mathcal{M}$$ is a random mini‑batch of spatial samples.
 
 To illustrate, here is the pseudocode for our integration loop:
