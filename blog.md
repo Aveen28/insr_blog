@@ -27,7 +27,7 @@ In this post, we’ll dive into how INSRs work, explore their integration with c
 # Why Rethink Classical PDE Solvers?
 
 ![Why Rethink Classical PDE Solvers?]({{ site.baseurl }}/images/img_insr_2.png)
-*Figure 2: Classical time‑dependent PDE solvers require (a) spatial discretization via meshes, grids, or point clouds and (b) temporal discretization via time‑stepping. Each brings its own drawbacks: numerical errors, high memory usage, limited adaptivity, stability constraints, numerical dissipation/dispersion, and high computational cost.*
+*Figure 2: Classical time‑dependent PDE solvers require (a) spatial discretization via meshes, grids, or point clouds and (b) temporal discretization via time‑stepping.*
 
 While well‑studied, this two‑step process suffers from:  
 - **Numerical artifacts** that degrade solution quality  
@@ -103,7 +103,7 @@ For our implicit spatial field representation, we adopt the **SIREN** architectu
 - **Fast convergence** during training  
 - **Captures fine spatial details** without explicit meshing  
 
-In our experiments, we fix \(\alpha=3\) and \(\beta=256\) (unless otherwise noted), balancing expressivity with computational cost.
+In our experiments, we fix $$(\alpha=3\)$$ and \(\beta=256\) (unless otherwise noted), balancing expressivity with computational cost.
 
 ---
 
