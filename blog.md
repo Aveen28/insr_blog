@@ -24,7 +24,7 @@ In this post, we’ll dive into how INSRs work, explore their integration with c
 
 ---
 
-## Why Rethink Classical PDE Solvers?
+# Why Rethink Classical PDE Solvers?
 
 ![Why Rethink Classical PDE Solvers?]({{ site.baseurl }}/images/img_insr_2.png)
 *Figure 2: Classical time‑dependent PDE solvers require (a) spatial discretization via meshes, grids, or point clouds and (b) temporal discretization via time‑stepping. Each brings its own drawbacks: numerical errors, high memory usage, limited adaptivity, stability constraints, numerical dissipation/dispersion, and high computational cost.*
@@ -41,7 +41,7 @@ This motivates our search for a mesh‑free spatial representation—enter INSR 
 
 ---
 
-## 🌌 What Is an Implicit Neural Spatial Representation (INSR)?
+# 🌌 What Is an Implicit Neural Spatial Representation (INSR)?
 
 ![Implicit Neural Spatial Representation]({{ site.baseurl }}/images/img_1_insr.png)  
 *Figure 1: An INSR encodes an entire spatial field in a neural network.*
