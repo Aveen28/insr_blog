@@ -27,7 +27,7 @@ In this post, we’ll dive into how INSRs work, explore their integration with c
 # Why Rethink Classical PDE Solvers?
 
 ![Why Rethink Classical PDE Solvers?]({{ site.baseurl }}/images/img_insr_2.png)
-*Figure 2: Classical time‑dependent PDE solvers require (a) spatial discretization via meshes, grids, or point clouds and (b) temporal discretization via time‑stepping.*
+*Figure 1: Classical time‑dependent PDE solvers require (a) spatial discretization via meshes, grids, or point clouds and (b) temporal discretization via time‑stepping.*
 
 While well‑studied, this two‑step process suffers from:  
 - **Numerical artifacts** that degrade solution quality  
@@ -44,7 +44,7 @@ This motivates our search for a mesh‑free spatial representation—enter INSR 
 # What Is an Implicit Neural Spatial Representation (INSR)?
 
 ![Implicit Neural Spatial Representation]({{ site.baseurl }}/images/img_1_insr.png)  
-*Figure 1: An INSR encodes an entire spatial field in a neural network.*
+*Figure 2: An INSR encodes an entire spatial field in a neural network.*
 
 An **Implicit Neural Spatial Representation (INSR)** is a mesh‑free way to represent any physical field—velocity, pressure, deformation, etc.—as a single continuous function approximated by a neural network.  Instead of storing values at discrete grid points or mesh vertices, we ask:
 
@@ -200,20 +200,147 @@ The second‑order PDE describing large deformations in hyperelastic solids.
 
 ---
 
-## 📊 Benchmarks
+# 1. Advection Equation
 
-### 🌀 1. Advection Equation
-- Preserves wave shape with high accuracy
-- No numerical diffusion
-- Midpoint integration
+The **advection equation** is one of the simplest time‑dependent PDEs, yet it highlights the core challenge of numerical transport:
 
-### 🌪️ 2. Incompressible Euler
-- Captures multi-scale vortex dynamics
-- Outperforms PINNs and DeepONets under same memory limits
+> **PDE:**  
+> $$
+> \frac{\partial u(x,t)}{\partial t} \;+\; (a \,\cdot\, \nabla)u(x,t) \;=\; 0,
+> $$
+> where \(u(x,t)\) is the advected scalar field and \(a\) is a constant velocity vector.
 
-### 🧱 3. Elastodynamic Simulations
-- Models nonlinear deformations and contact
-- Outperforms FEM and MPM in memory-constrained settings
+Despite its linearity, discretizing this equation on a mesh often introduces **numerical diffusion** (smearing of sharp features) or **numerical dispersion** (unphysical oscillations). Our goal is to show how an Implicit Neural Spatial Representation (INSR) can **dramatically reduce diffusion**, under tight memory budgets, at the cost of extra compute.
+
+### Time Integrators
+
+**Midpoint Rule** (second‑order, energy preserving):  
+$$
+u^{n+1}(x) = u^n(x) \;+\; \Delta t\,\bigl[a\cdot\nabla\bigl(\tfrac{u^n(x)+u^{n+1}(x)}{2}\bigr)\bigr].
+$$
+- On the grid, this is a linear solve per step.  
+- In INSR, we **optimize** \(\theta\) so that the above residual is minimized over a set of sample points \(\mathcal{M}\).
+
+**Implicit Euler** (first‑order, dissipative):  
+$$
+u^{n+1}(x) = u^n(x) \;+\; \Delta t\,\bigl[a\cdot\nabla u^{n+1}(x)\bigr].
+$$
+- We include this variant (“Ours–implicit”) to illustrate the effect of artificial damping.
+
+Below, we evaluate INSR on two canonical testbeds: a 1D Gaussian pulse and a 2D two‑vortex flow.
+
+### 1.1 1D Gaussian Pulse
+
+In this test we advect a narrow Gaussian pulse across a one‑dimensional domain to evaluate how well each method preserves sharp features over long times.
+
+#### Problem Setup
+
+1. **Domain:**  
+   \(x\in[-2,2]\)
+
+2. **Initial Condition:**  
+   A narrow Gaussian centered at \(-1.5\):
+   $$
+   u(x,0) = \exp\!\biggl(-\frac{(x + 1.5)^2}{2\sigma^2}\biggr), 
+   \quad \sigma=0.1.
+   $$
+
+3. **Velocity:**  
+   \(a=0.25\) (moves the pulse to the right)
+
+4. **Time Integration:**  
+   \(\Delta t=0.05\), total \(240\) steps to \(t=12\) s.
+
+5. **Boundary Conditions:**  
+   \(u(-2,t)=u(2,t)=0\).
+
+#### Representations & Memory
+
+To isolate spatial discretization effects, **both** INSR and the finite‑difference grid use **3.520 KB**:
+
+- **INSR (“Ours”):**  
+  SIREN MLP with \(\alpha=2\) hidden layers, \(\beta=20\) neurons each.
+
+- **Grid:**  
+  Uniform grid of \(901\) points with midpoint integration.
+
+### Quantitative & Qualitative Results
+
+#### Error over Time & Wave Profiles
+
+![1D Transport: MAE & Wave Snapshots]({{ site.baseurl }}/images/img_inse_5.png)  
+*Figure 4: (Left) Mean absolute error over time. (Center) Profiles at \(t=3\) s. (Right) Profiles at \(t=12\) s.*
+
+1. **MAE Curves (left panel):**  
+   - **Ours (midpoint, blue):** MAE remains nearly flat under 0.005 throughout 12 s, showing **virtually no diffusion**.  
+   - **Grid (same memory, green):** MAE climbs steadily to ~0.015, reflecting pulse broadening.  
+   - **Ours (implicit, yellow):** MAE grows to ~0.08, demonstrating **excessive damping** from implicit Euler.
+
+2. **Profiles at \(t=3\) s (center panel):**  
+   - The midpoint INSR (blue) overlays the exact Gaussian (grey).  
+   - The grid (green) shows slight broadening and amplitude loss.  
+   - The implicit INSR (yellow) is noticeably lower in amplitude.
+
+3. **Profiles at \(t=12\) s (right panel):**  
+   - The blue curve remains sharp and centered, whereas the green grid solution is markedly smeared.  
+   - The yellow curve is almost flat, indicating near‑total dissipation.
+  
+#### Memory–Error–Time Trade‑Off
+
+![1D Transport: Quantitative Table]({{ site.baseurl }}/images/img_inse_6.png) 
+*Figure 5: Solution profiles of the 1D Gaussian pulse at 𝑡 = 3 t=3 s (left) and 𝑡 = 12 t=12 s (right), showing how INSR + midpoint (blue) preserves the amplitude and shape.*
+
+- To achieve the **same** final MAE of ~0.003, the grid must increase memory by **8×**.  
+- INSR’s wall‑clock cost (hours) vs. grid (seconds) underscores the **compute vs. memory** trade‑off.
+
+### 1.2 2D Two‑Vortex Transport
+
+We test on a classic 2D advection benchmark: two Taylor–Green–style vortices of different spatial scales, advected by an incompressible velocity field. This scenario stresses a solver’s ability to capture **multiscale** features without excessive smoothing.
+
+#### Problem Setup
+
+1. **Domain:**  
+   \([0,2\pi]\times[0,2\pi]\)
+
+2. **Initial Field:**  
+   Two oppositely rotating Taylor–Green vortices of different scales:
+   $$
+   \rho=1,\quad u_x = \sin x\cos y,\quad u_y = -\cos x\sin y.
+   $$
+
+3. **Time Integration:**  
+   Same midpoint rule, \(\Delta t=0.05\), \(100\) steps to \(t=5\) s.
+
+4. **Incompressibility Constraint:**  
+   Here we only advect a **passive scalar** (the density field), so \(\nabla\!\cdot u=0\) is satisfied analytically.
+
+#### Representations & Memory
+
+- **INSR:** SIREN with \(\alpha=3\), \(\beta=32\) → 25.887 KB.  
+- **Grid:** \(48\times48\) nodes → 27.00 KB.
+
+### Quantitative & Qualitative Results
+
+#### Error over Time & Density Snapshots
+
+![2D Transport: MSE & Density Snapshots]({{ site.baseurl }}/images/img_inse_7.png) 
+*Figure 6: Mean squared error over 100 timesteps for the 2D Taylor–Green–style two‑vortex advection, comparing INSR (blue) to the coarse grid solver (green).*
+
+1. **MSE Curves (left):**  
+   - **Ours (blue):** Mean squared error stays below \(5\times10^{-4}\).  
+   - **Grid (green):** Error rises above \(4\times10^{-3}\), almost an order larger.
+
+2. **Density at Step 100 (right):**  
+   - INSR preserves **both** the large and small vortex structures with crisp edges.  
+   - The grid diffusion washes out the **smaller** vortex entirely.
+
+#### Memory–Error–Time Trade‑Off
+
+![2D Transport: Quantitative Table]({{ site.baseurl }}/images/img_inse_8.png) 
+*Figure 5: Density magnitude snapshots of the two‑vortex field at step 100*
+
+- Matching INSR’s accuracy demands an ** enormous** memory spike (\(\times500\)).  
+- INSR excels at capturing **multiscale** features that simple grids cannot resolve under tight budgets.
 
 ---
 
