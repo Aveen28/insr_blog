@@ -7,10 +7,22 @@ excerpt_separator: "<!--more-->"
 
 ## 🧩 Introduction
 
-Solving time-dependent partial differential equations (PDEs) is fundamental to simulations in fluid dynamics, structural mechanics, and more. Traditional solvers rely on spatial discretizations like grids and meshes, which are memory-heavy and inflexible.
+Solving time‑dependent partial differential equations (PDEs) lies at the heart of modeling countless physical phenomena—from the swirling eddies of turbulent fluids to the dynamic deformation of elastic bodies. Traditionally, these simulations break the problem into two pieces:
 
-This blog explores **Implicit Neural Spatial Representations (INSRs)** — a novel, mesh-free approach that represents the spatial field using a neural network and evolves it over time using classic numerical schemes.
+1. **Time discretization**, marching forward in small steps (e.g. explicit or implicit Euler),  
+2. **Spatial discretization**, representing fields on grids, meshes, or particle clouds.
 
+While intuitive, these classical spatial meshes carry three key downsides:
+
+- **Numerical artifacts** (diffusion, dissipation, artificial viscosity) that compromise fidelity,  
+- **Growing memory costs** as resolution increases,  
+- **Complex adaptivity**, requiring expensive remeshing or data structures.
+
+What if we could bypass explicit meshes altogether? Enter **Implicit Neural Spatial Representations (INSRs)**—a new paradigm that encodes an entire spatial field directly in the weights of a neural network. Instead of storing values at grid nodes, we store a compact function
+
+```math
+f_\theta(x)\colon \Omega \to \mathbb{R}^d,
+```
 ---
 
 ## 🌌 What is an INSR?
