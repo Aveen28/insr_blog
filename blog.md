@@ -5,7 +5,7 @@ categories: [deep-learning, scientific-ml, PDEs]
 excerpt_separator: "<!--more-->"
 ---
 
-# 🧩 Introduction
+# Introduction
 
 Solving time‑dependent partial differential equations (PDEs) is fundamental to understanding and predicting a wide range of real‑world processes—from the sweeping currents in the atmosphere and oceans to the flexing and cracking of materials under stress. At their core, these simulations require two key steps:
 
@@ -41,7 +41,7 @@ This motivates our search for a mesh‑free spatial representation—enter INSR 
 
 ---
 
-# 🌌 What Is an Implicit Neural Spatial Representation (INSR)?
+# What Is an Implicit Neural Spatial Representation (INSR)?
 
 ![Implicit Neural Spatial Representation]({{ site.baseurl }}/images/img_1_insr.png)  
 *Figure 1: An INSR encodes an entire spatial field in a neural network.*
@@ -85,7 +85,7 @@ An **Implicit Neural Spatial Representation (INSR)** is a mesh‑free way to rep
 ![SIREN-based Implicit Neural Spatial Representation]({{ site.baseurl }}/images/img_insr_3.png)  
 *Figure 3: SIREN MLP architecture used for INSRs.*
 
-For our implicit spatial field representation, we adopt the **SIREN** architecture (Sitzmann et al., 2020). SIRENs are multilayer perceptrons with **sinusoidal activations**, which excel at modeling high‑frequency details and provide smooth, infinitely differentiable outputs—ideal for PDE fields.
+For our implicit spatial field representation, we adopt the **SIREN** architecture. SIRENs are multilayer perceptrons with **sinusoidal activations**, which excel at modeling high‑frequency details and provide smooth, infinitely differentiable outputs—ideal for PDE fields.
 
 1. **Input Encoding**  
    - The network takes a spatial coordinate $$(x,y)\in[-1,1]^2$$.  
@@ -159,8 +159,6 @@ where
 - $$C(\cdot)$$ penalizes violation of the prescribed boundary behavior at each boundary point $$x_b$$,  
 - $$\lambda$$ balances the physics objective against boundary enforcement.
 
----
-
 ### Initial Condition
 
 To initialize the network at $$t=0$$, we fit it to a known initial field $$\hat f^0(x)$$ by minimizing the squared error over a batch of sample points $$\mathcal{M}\subset \Omega$$:
@@ -176,12 +174,29 @@ We again solve this via Adam on mini‑batches, yielding a network whose predict
 
 ---
 
-## ⚙️ Method Overview
+# Method Overview
 
-- Neural network encodes the spatial field at each timestep
-- Time integration (e.g., Euler, midpoint, variational integrator) evolves the weights
-- Gradient-based optimization minimizes residuals in the PDE
-- No training data needed — this is a solver, not a surrogate
+We evaluate our INSR‑based solver across three canonical time‑dependent PDEs. Each will be treated in detail in the following sections, with full equations and algorithmic specifics.
+
+### 1. Advection Equation  
+A linear transport problem where a scalar field $$u(x,t)$$ is carried along by a prescribed velocity.  
+- **Physical phenomenon**: Passive tracers, pollutant transport, level‑set propagation  
+- **Key challenge**: Avoiding numerical diffusion and preserving sharp features over long time marches  
+- **Our approach**: We embed $$u(x)$$ in a SIREN network and step forward via an energy‑preserving midpoint or implicit Euler integrator, solving a small optimization at each timestep  
+
+### 2. Incompressible Euler Equations  
+The governing equations for ideal (inviscid), divergence‑free fluid flow.  
+- **Physical phenomenon**: Vortex dynamics, turbulence onset, vortex–vortex interactions  
+- **Key challenge**: Enforcing incompressibility $$\nabla \!\cdot\! u = 0$$ while capturing multiscale vortical structures without excessive smoothing  
+- **Our approach**: We represent velocity and pressure each as implicit neural fields, then apply a Chorin‑style operator‑splitting (advection, pressure projection, velocity correction), each cast as an optimization over network weights  
+
+### 3. Elastodynamic Equation  
+The second‑order PDE describing large deformations in hyperelastic solids.  
+- **Physical phenomenon**: Vibrations, wave propagation, contact and impacts in elastic bodies  
+- **Key challenge**: Balancing kinetic and elastic energies, handling collisions or contact constraints without remeshing  
+- **Our approach**: We encode the deformation map $$\varphi(x)$$ in a neural network and perform variational time integration (discrete Hamilton’s principle) by minimizing an incremental potential at each timestep, augmented with soft contact penalties  
+
+*The mathematical formulations, sampling strategies, and hyperparameter settings for each method are detailed in the following sections.*  
 
 ---
 
