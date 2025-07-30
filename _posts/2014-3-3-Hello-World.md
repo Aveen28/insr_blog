@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "Solving Time-Dependent PDEs with Implicit Neural Spatial Representations"
-date: 2025-08-10
 categories: [deep-learning, scientific-ml, PDEs]
 excerpt_separator: "<!--more-->"
 ---
