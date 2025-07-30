@@ -366,8 +366,8 @@ where:
 
 - $$\mathbf{u}(x,t)$$ is the velocity field,  
 - $$p(x,t)$$ is the pressure that enforces incompressibility,  
-- $$\rho_f$$ is the fluid density (here \(\rho_f=1\)),  
-- $$\mathbf{g}$$ is external body force (here \(\mathbf{g}=0\)).  
+- $$\rho_f$$ is the fluid density (here $$\rho_f=1$$),  
+- $$\mathbf{g}$$ is external body force (here $$\mathbf{g}=0$$).  
 
 Even without viscosity, the nonlinear advection term $$\mathbf{u}\!\cdot\nabla\mathbf{u}$$ together with the divergence‑free constraint makes this a challenging PDE to solve accurately, especially when capturing fine vortex structures under tight memory constraints.
 
@@ -378,22 +378,28 @@ We adopt the classic Chorin‑style operator‑splitting scheme, which breaks th
 ![Operator Splitting Workflow]({{ site.baseurl }}/images/img_insrs_9.png)
 *Figure 8: Chorin-Style Operator-Splitting Workflow*
 
-1. **Advection (semi‑Lagrangian):**  
+1. **Advection (semi‑Lagrangian):**
+   
    $$
    I_{\mathrm{adv}} = \bigl\|\mathbf{u}_{\mathrm{adv}}^{n+1}(x) - \mathbf{u}^n\bigl(x - \Delta t\,\mathbf{u}^n(x)\bigr)\bigr\|_2^2.
    $$
+   
    We backtrack each point $$x$$ by $$\Delta t\,\mathbf{u}^n(x)$$, evaluating the MLP directly at the footpoint (no interpolation).
 
-2. **Pressure Projection:**  
+2. **Pressure Projection:**
+   
    $$
    I_{\mathrm{pro}} = \bigl\|\nabla^2 p^{\,n+1}(x) - \nabla\!\cdot\mathbf{u}_{\mathrm{adv}}^{n+1}(x)\bigr\|_2^2.
    $$
+   
    Optimizing this enforces $$\nabla\!\cdot \mathbf{u}=0$$ by solving for the pressure MLP.
 
-3. **Velocity Correction:**  
+3. **Velocity Correction:**
+   
    $$
    I_{\mathrm{cor}} = \bigl\|\mathbf{u}^{n+1}(x) - \bigl(\mathbf{u}_{\mathrm{adv}}^{n+1}(x) - \nabla p^{\,n+1}(x)\bigr)\bigr\|_2^2.
-   $$  
+   $$
+   
    The final velocity is obtained by subtracting the learned pressure gradient.
 
 Each substep minimizes its residual over a random batch of points $$\mathcal{M}\subset\Omega$$ using Adam.
@@ -413,10 +419,12 @@ The Taylor–Green vortex is a classic analytical solution to the incompressible
 
 You know the exact velocity field at any time, so you can measure numerical error directly.
 We validate on the 2D Taylor–Green vortex (zero viscosity) with analytical solution  
+
 $$
 \mathbf{u}(x,y,t) = \bigl(\sin x\cos y,\,-\cos x\sin y\bigr), 
 \quad (x,y)\in[0,2\pi]^2.
 $$  
+
 Timestep: $$\Delta t=0.05$$, 100 steps to $$t=5\,$$s.  
 
 Both INSR and the coarse grid use ~25 KB for the velocity field:
