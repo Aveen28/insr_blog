@@ -5,7 +5,7 @@ categories: [deep-learning, scientific-ml, PDEs]
 excerpt_separator: "<!--more-->"
 ---
 
-## 🧩 Introduction
+# 🧩 Introduction
 
 Solving time‑dependent partial differential equations (PDEs) is fundamental to understanding and predicting a wide range of real‑world processes—from the sweeping currents in the atmosphere and oceans to the flexing and cracking of materials under stress. At their core, these simulations require two key steps:
 
@@ -28,10 +28,6 @@ In this post, we’ll dive into how INSRs work, explore their integration with c
 
 ![Why Rethink Classical PDE Solvers?]({{ site.baseurl }}/images/img_insr_2.png)
 *Figure 2: Classical time‑dependent PDE solvers require (a) spatial discretization via meshes, grids, or point clouds and (b) temporal discretization via time‑stepping. Each brings its own drawbacks: numerical errors, high memory usage, limited adaptivity, stability constraints, numerical dissipation/dispersion, and high computational cost.*
-
-Traditional approaches split a PDE into  
-1. **Spatial discretization** (meshes, grids, particle clouds), and  
-2. **Temporal discretization** (Euler, Runge–Kutta, operator splitting).  
 
 While well‑studied, this two‑step process suffers from:  
 - **Numerical artifacts** that degrade solution quality  
