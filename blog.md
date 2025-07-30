@@ -454,12 +454,101 @@ Both INSR and the coarse grid use ~25 KB for the velocity field:
 
 ---
 
-## 🔚 Conclusion
+# 3. Elastodynamic Equation
 
-INSRs are a promising alternative to traditional numerical solvers, especially in memory-constrained or adaptive scenarios. They unify deep learning with classical numerical integration — unlocking new ways to simulate complex physical systems.
+Elastodynamics is the study of how elastic (i.e. deformable but recoverable) solids respond to time-varying loads. Mathematically, it describes the motion of a continuum body whose internal stresses derive from an elastic energy density.
 
-> 📌 Paper: [Chen et al., ICML 2023](https://arxiv.org/abs/2210.00124)  
-> 🎓 Presented at: Advanced Seminar, Universität Stuttgart (2025)
+We now turn to the motion of deformable solids, governed by the **elastodynamic equation**:
+
+> **PDE:**  
+> $$
+> \rho_0\,\ddot\phi(x,t) \;=\;\nabla\!\cdot P\bigl(F(x,t)\bigr)\;+\;\rho_0\,b(x,t),
+> $$
+> where  
+> - $$\phi(x,t)$$ is the deformation map,  
+> - $$\rho_0$$ is the reference density,  
+> - $$F = \nabla\phi$$ is the deformation gradient,  
+> - $$P = \frac{\partial\Psi}{\partial F}$$ is the first Piola–Kirchhoff stress,  
+> - $$b$$ is any applied body force.
+
+To close the system, we assume a **stable Neo-Hookean** energy density:
+
+$$
+\Psi(F) \;=\;
+\frac{\lambda}{2}\,\mathrm{tr}^2\bigl(\Sigma - I\bigr)\;+\;\mu\,\bigl(\det F - 1\bigr)^2,
+$$
+
+where $$\Sigma$$ are the singular values of $$F$$, and $$(\lambda,\mu)$$ are the Lamé parameters.
+
+### Variational Time Integration
+
+We adopt a **variational integrator** that marches the deformation and velocity forward by minimizing the incremental action:
+
+$$
+I(\phi^{n+1}) \;=\;
+\underbrace{\tfrac12\,\rho_0\bigl\|\dot\phi^{n+1} - \dot\phi^n\bigr\|^2}_{\text{kinetic energy}}
+\;+\;
+\underbrace{\Psi\bigl(\phi^{n+1}\bigr)}_{\text{elastic energy}}
+\;-\;
+\underbrace{\rho_0\,b^T\,\phi^{n+1}}_{\substack{\text{external}\\[-3pt]\text{force potential}}},
+$$
+
+with
+$$
+\dot\phi^{n+1} \;=\;\frac{\phi^{n+1}-\phi^n}{\Delta t}\,
+$$
+
+By replacing the spatial mesh with an implicit neural representation $$\,\phi_\theta(x)\,$$, we solve the above minimization for the network weights $$\theta$$ at each timestep.
+
+### Implementation Workflow
+
+![Elastodynamic INSR Workflow]({{ site.baseurl }}/images/img_insr_12.png)   
+*Figure 11: INSR elastodynamic pipeline.*
+
+We define the domain, set initial/boundary conditions, sample the undeformed volume, impose collision constraints if needed, then compute the deformation via variational optimization.
+
+- **Define spatial domain**  
+  Establish the geometric region of the object in its undeformed (reference) configuration.  
+- **Set initial & boundary conditions**  
+  Specify the starting deformation (often identity) and any fixed or driven boundaries.  
+- **Sample undeformed domain**  
+  Randomly pick a mini-batch of points inside the domain to evaluate the neural field.  
+- **Collision constraints (if applicable)**  
+  Identify points that collide with external geometry and add penalty terms to enforce contact.  
+- **Deformation computation**  
+  Optimize the network weights so that the computed deformation at each sample minimizes the variational energy (kinetic + elastic − external potentials), yielding the next time-step deformation.
+
+### Elastic Tension Test
+
+We first evaluate on a classic **2D tensile test**:
+
+1. **Setup:**  
+   - A square block with checkerboard texture (or mesh/points)  
+   - Clamped on the left and right boundaries, tension applied slowly.  
+2. **Representations (same memory ~56 KB):**  
+   - **Ours (INSR):** SIREN MLP, $$\alpha=3$$, $$\beta=68$$.  
+   - **FEM (mesh-based):** Tetrahedral mesh with 0.8 K vertices.  
+   - **MPM (particle-based):** 1.7 K material points.  
+
+![Elastic Tension Comparison]({{ site.baseurl }}/images/img_insr_13.png)  
+*Figure 12: Undeformed (top row) vs. deformed (bottom) states.*
+
+INSR (left) preserves smooth texture and avoids mesh fracture, FEM (center) shows coarseness, and MPM (right) exhibits particle clustering/fracture.
+
+### Error Visualization
+
+To quantify accuracy, we compare against a high-resolution FEM reference and plot the pointwise $$L_2$$ displacement error:
+
+![Elastic Tension Error Field]({{ site.baseurl }}/images/img_insr_14.png)   
+*Figure 3: Per-point $$L_2$$ error heatmap.*
+
+INSR’s error (middle) is visibly lower and more uniform than FEM’s (right), especially near high-strain regions.
+
+### Quantitative Results
+![Quantitative Result Comaprison]({{ site.baseurl }}/images/img_insr_15.png) 
+*Table 1: Elastic tension test metrics.*
+
+INSR achieves over 2× lower maximum displacement error under the same memory budget, at the cost of longer runtime.
 
 ---
 
