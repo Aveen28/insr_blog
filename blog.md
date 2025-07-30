@@ -12,12 +12,6 @@ Solving time‑dependent partial differential equations (PDEs) is fundamental to
 1. **Time stepping**, where the system’s state is advanced in small increments to capture its temporal evolution.  
 2. **Spatial discretization**, where the continuous physical domain is broken into a finite set of points or elements (grids, meshes, or particles) so that the underlying equations can be solved numerically.
 
-Despite decades of refinement, classical spatial discretizations still face three major challenges:
-
-- **Numerical artifacts** such as artificial diffusion or spurious oscillations, which can distort important features and erode accuracy.  
-- **Rapidly growing memory requirements**: as you refine the mesh to resolve finer details, the number of elements skyrockets and so does the cost of storing and manipulating them.  
-- **Complex adaptivity**: dynamically refining or coarsening the mesh on the fly is often a monumental coding effort and a source of instabilities.
-
 What if we could remove the mesh entirely and let a single, flexible model represent the spatial field? That’s the promise of **Implicit Neural Spatial Representations (INSRs)**. Rather than assigning a variable to each node in a mesh, we represent the entire field—whether it’s fluid velocity, pressure, or material displacement—as a continuous function encoded in the weights of a neural network. As the simulation marches forward in time, we simply update the network’s parameters according to the governing physics, using well‑established time integrators like explicit or implicit schemes.
 
 This mesh‑free approach brings three standout benefits:
@@ -27,6 +21,27 @@ This mesh‑free approach brings three standout benefits:
 - **Self‑contained solver**: no external training data is required—INSR learns the solution “on the fly” by minimizing the physics residual itself.
 
 In this post, we’ll dive into how INSRs work, explore their integration with classic time‑stepping methods, and showcase benchmark results on advection, turbulent vortex flows, and nonlinear elastic deformations. While INSRs may demand more computation per time step, they deliver higher accuracy, lower memory usage, and a simplicity of implementation that opens new doors for scientific simulation. Let’s explore this exciting frontier in mesh‑free numerical methods.  
+
+---
+
+## Why Rethink Classical PDE Solvers?
+
+![Why Rethink Classical PDE Solvers?]({{ site.baseurl }}/images/img_insr_2.png)
+*Figure 2: Classical time‑dependent PDE solvers require (a) spatial discretization via meshes, grids, or point clouds and (b) temporal discretization via time‑stepping. Each brings its own drawbacks: numerical errors, high memory usage, limited adaptivity, stability constraints, numerical dissipation/dispersion, and high computational cost.*
+
+Traditional approaches split a PDE into  
+1. **Spatial discretization** (meshes, grids, particle clouds), and  
+2. **Temporal discretization** (Euler, Runge–Kutta, operator splitting).  
+
+While well‑studied, this two‑step process suffers from:  
+- **Numerical artifacts** that degrade solution quality  
+- **Rapidly growing memory footprints** as resolution increases  
+- **Complex adaptivity**, requiring expensive remeshing  
+- **Stability constraints** on timestep size  
+- **Artificial dissipation or dispersion**  
+- **High computational cost** at fine resolution  
+
+This motivates our search for a mesh‑free spatial representation—enter INSR in the next section.
 
 ---
 
@@ -56,7 +71,7 @@ An **Implicit Neural Spatial Representation (INSR)** is a mesh‑free way to rep
 ### Key Properties
 
 - **Continuous & Differentiable**  
-  The network defines a \(C^\infty\) function. Computing spatial gradients, divergences, or Laplacians is just auto‑diff.
+  The network defines a function. Computing spatial gradients, divergences, or Laplacians is just auto‑diff.
 
 - **Global Support**  
   Every weight influences the field everywhere. This global coupling lets the model capture long‑range correlations naturally.
