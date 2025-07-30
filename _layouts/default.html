@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script async
-      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-    </script>
     <title>{% if page.title %}{{ page.title }} – {% endif %}{{ site.name }} – {{ site.description }}</title>
 
     {% include meta.html %}
@@ -51,4 +48,26 @@
 
     {% include analytics.html %}
   </body>
+    <!-- KaTeX CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
+    integrity="sha384-vZTG2a/T+2h9lj+7xLh5XoyYG7jVxGiRZc4Q3TGzQj1+CaLfy6He1mUSDZvA+q9M"
+    crossorigin="anonymous"
+  >
+  <!-- KaTeX & auto-render -->
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"
+    integrity="sha384-qmMnUrYjpS4E6+O9w6o5/qIYQJQ1E1p5pIogNnGh9T+Og=="
+    crossorigin="anonymous"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
+    integrity="sha384-mll67QQ0K1x87v+zlX3C5vG2tc/jVmbYh5y8FYjOAYu+FOhEVa+8WlX/pm8ol+T+"
+    crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'\\\\(',right:'\\\\)',display:false},{left:'$$',right:'$$',display:true}]});"
+  ></script>
+
 </html>
