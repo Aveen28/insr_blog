@@ -380,22 +380,19 @@ We adopt the classic Chorin‑style operator‑splitting scheme, which breaks th
 
 1. **Advection (semi‑Lagrangian):**  
    $$
-   I_{\mathrm{adv}} = \bigl\|\mathbf{u}_{\mathrm{adv}}^{n+1}(x)
-   - \mathbf{u}^n\bigl(x - \Delta t\,\mathbf{u}^n(x)\bigr)\bigr\|_2^2.
+   I_{\mathrm{adv}} = \bigl\|\mathbf{u}_{\mathrm{adv}}^{n+1}(x) - \mathbf{u}^n\bigl(x - \Delta t\,\mathbf{u}^n(x)\bigr)\bigr\|_2^2.
    $$
-   We backtrack each point $x$ by $\Delta t\,\mathbf{u}^n(x)$, evaluating the MLP directly at the footpoint (no interpolation).
+   We backtrack each point $$x$$ by $$\Delta t\,\mathbf{u}^n(x)$$, evaluating the MLP directly at the footpoint (no interpolation).
 
 2. **Pressure Projection:**  
    $$
-   I_{\mathrm{pro}} = \bigl\|\nabla^2 p^{\,n+1}(x)
-   - \nabla\!\cdot\mathbf{u}_{\mathrm{adv}}^{n+1}(x)\bigr\|_2^2.
+   I_{\mathrm{pro}} = \bigl\|\nabla^2 p^{\,n+1}(x) - \nabla\!\cdot\mathbf{u}_{\mathrm{adv}}^{n+1}(x)\bigr\|_2^2.
    $$
-   Optimizing this enforces $\nabla\!\cdot \mathbf{u}=0$ by solving for the pressure MLP.
+   Optimizing this enforces $$\nabla\!\cdot \mathbf{u}=0$$ by solving for the pressure MLP.
 
 3. **Velocity Correction:**  
    $$
-   I_{\mathrm{cor}} = \bigl\|\mathbf{u}^{n+1}(x)
-   - \bigl(\mathbf{u}_{\mathrm{adv}}^{n+1}(x) - \nabla p^{\,n+1}(x)\bigr)\bigr\|_2^2.
+   I_{\mathrm{cor}} = \bigl\|\mathbf{u}^{n+1}(x) - \bigl(\mathbf{u}_{\mathrm{adv}}^{n+1}(x) - \nabla p^{\,n+1}(x)\bigr)\bigr\|_2^2.
    $$  
    The final velocity is obtained by subtracting the learned pressure gradient.
 
