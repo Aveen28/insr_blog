@@ -364,18 +364,18 @@ $$
 
 where:
 
-- **\(\mathbf{u}(x,t)\)** is the velocity field,  
-- **\(p(x,t)\)** is the pressure that enforces incompressibility,  
-- **\(\rho_f\)** is the fluid density (here \(\rho_f=1\)),  
-- **\(\mathbf{g}\)** is external body force (here \(\mathbf{g}=0\)).  
+- $$\mathbf{u}(x,t)$$ is the velocity field,  
+- $$p(x,t)$$ is the pressure that enforces incompressibility,  
+- $$\rho_f$$ is the fluid density (here \(\rho_f=1\)),  
+- $$\mathbf{g}$$ is external body force (here \(\mathbf{g}=0\)).  
 
-Even without viscosity, the nonlinear advection term \(\mathbf{u}\!\cdot\nabla\mathbf{u}\) together with the divergence‑free constraint makes this a challenging PDE to solve accurately, especially when capturing fine vortex structures under tight memory constraints.
+Even without viscosity, the nonlinear advection term $$\mathbf{u}\!\cdot\nabla\mathbf{u}$$ together with the divergence‑free constraint makes this a challenging PDE to solve accurately, especially when capturing fine vortex structures under tight memory constraints.
 
-### 2.1 Operator‑Splitting Time Integration
+### Operator‑Splitting Time Integration
 
 We adopt the classic Chorin‑style operator‑splitting scheme, which breaks the nonlinear, coupled system into three linear substeps per timestep:
 
-![Operator Splitting Workflow]({{ site.baseurl }}/images/img_insr_9.png)
+![Operator Splitting Workflow]({{ site.baseurl }}/images/img_insrs_9.png)
 *Figure 8: Chorin-Style Operator-Splitting Workflow*
 
 1. **Advection (semi‑Lagrangian):**  
@@ -399,9 +399,9 @@ We adopt the classic Chorin‑style operator‑splitting scheme, which breaks th
    $$  
    The final velocity is obtained by subtracting the learned pressure gradient.
 
-Each substep minimizes its residual over a random batch of points $\mathcal{M}\subset\Omega$ using Adam.
+Each substep minimizes its residual over a random batch of points $$\mathcal{M}\subset\Omega$$ using Adam.
 
-### 2.2 Taylor–Green Vortex Benchmark
+### Taylor–Green Vortex Benchmark
 
 The Taylor–Green vortex is a classic analytical solution to the incompressible Euler equations in two dimensions. It’s widely used as a benchmark because:
 
@@ -424,7 +424,7 @@ Timestep: $$\Delta t=0.05$$, 100 steps to $$t=5\,$$s.
 
 Both INSR and the coarse grid use ~25 KB for the velocity field:
 - **INSR:** SIREN with $$\alpha=3$$ hidden layers, $$\beta=32$$ neurons each.
-- **Grid:** $48{\times}48$ finite‑difference grid with the same operator‑splitting.
+- **Grid:** $$48{\times}48$$ finite‑difference grid with the same operator‑splitting.
 
 ### Quantitative & Qualitative Results
 
@@ -434,8 +434,8 @@ Both INSR and the coarse grid use ~25 KB for the velocity field:
 *Figure 9: (Left) Mean squared error over 100 timesteps.  
 (Right) Velocity magnitude at final step: ground truth, INSR, and grid.*
 
-- **INSR (blue):** MSE remains below $5\times10^{-4}$.  
-- **Grid (green):** Error climbs above $4\times10^{-3}$, nearly an order of magnitude larger.  
+- **INSR (blue):** MSE remains below $$5\times10^{-4}$$.  
+- **Grid (green):** Error climbs above $$4\times10^{-3}$$, nearly an order of magnitude larger.  
 - **Field snapshots:** INSR preserves the checkerboard’s fine peaks and troughs; the grid smooths them significantly.
 
 #### Memory–Error–Time Trade‑Off
