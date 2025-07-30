@@ -7,24 +7,26 @@ excerpt_separator: "<!--more-->"
 
 ## 🧩 Introduction
 
-Solving time‑dependent partial differential equations (PDEs) lies at the heart of modeling countless physical phenomena—from the swirling eddies of turbulent fluids to the dynamic deformation of elastic bodies. Traditionally, these simulations break the problem into two pieces:
+Solving time‑dependent partial differential equations (PDEs) is fundamental to understanding and predicting a wide range of real‑world processes—from the sweeping currents in the atmosphere and oceans to the flexing and cracking of materials under stress. At their core, these simulations require two key steps:
 
-1. **Time discretization**, marching forward in small steps (e.g. explicit or implicit Euler),  
-2. **Spatial discretization**, representing fields on grids, meshes, or particle clouds.
+1. **Time stepping**, where the system’s state is advanced in small increments to capture its temporal evolution.  
+2. **Spatial discretization**, where the continuous physical domain is broken into a finite set of points or elements (grids, meshes, or particles) so that the underlying equations can be solved numerically.
 
-While intuitive, these classical spatial meshes carry three key downsides:
+Despite decades of refinement, classical spatial discretizations still face three major challenges:
 
-- **Numerical artifacts** (diffusion, dissipation, artificial viscosity) that compromise fidelity,  
-- **Growing memory costs** as resolution increases,  
-- **Complex adaptivity**, requiring expensive remeshing or data structures.
+- **Numerical artifacts** such as artificial diffusion or spurious oscillations, which can distort important features and erode accuracy.  
+- **Rapidly growing memory requirements**: as you refine the mesh to resolve finer details, the number of elements skyrockets and so does the cost of storing and manipulating them.  
+- **Complex adaptivity**: dynamically refining or coarsening the mesh on the fly is often a monumental coding effort and a source of instabilities.
 
-What if we could bypass explicit meshes altogether? Enter **Implicit Neural Spatial Representations (INSRs)**—a new paradigm that encodes an entire spatial field directly in the weights of a neural network. Instead of storing values at grid nodes, we store a compact function
+What if we could remove the mesh entirely and let a single, flexible model represent the spatial field? That’s the promise of **Implicit Neural Spatial Representations (INSRs)**. Rather than assigning a variable to each node in a mesh, we represent the entire field—whether it’s fluid velocity, pressure, or material displacement—as a continuous function encoded in the weights of a neural network. As the simulation marches forward in time, we simply update the network’s parameters according to the governing physics, using well‑established time integrators like explicit or implicit schemes.
 
-```math
-f_\theta(x)\colon \Omega \to \mathbb{R}^d
-```
+This mesh‑free approach brings three standout benefits:
 
-and evolve its parameters θ over time using standard time integrators.
+- **Fixed memory footprint**: the network’s size stays constant, regardless of how “smooth” or “complex” the solution becomes.  
+- **Adaptive resolution**: the neural network can automatically allocate capacity to where it’s needed most, without the overhead of remeshing.  
+- **Self‑contained solver**: no external training data is required—INSR learns the solution “on the fly” by minimizing the physics residual itself.
+
+In this post, we’ll dive into how INSRs work, explore their integration with classic time‑stepping methods, and showcase benchmark results on advection, turbulent vortex flows, and nonlinear elastic deformations. While INSRs may demand more computation per time step, they deliver higher accuracy, lower memory usage, and a simplicity of implementation that opens new doors for scientific simulation. Let’s explore this exciting frontier in mesh‑free numerical methods.  
 
 ---
 
