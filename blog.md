@@ -322,7 +322,8 @@ We test on a classic 2D advection benchmark: two Taylor–Green–style vortices
 
 #### Representations & Memory
 
-- **INSR:** SIREN with $$\alpha=3$$, $$\beta=32$$ → 25.887 KB.  
+- **INSR:** SIREN with $$\alpha=3$$, $$\beta=32$$ → 25.887 KB.
+
 - **Grid:** $$48\times48$$ nodes → 27.00 KB.
 
 ### Quantitative & Qualitative Results
