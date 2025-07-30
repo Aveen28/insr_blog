@@ -30,15 +30,44 @@ In this post, we’ll dive into how INSRs work, explore their integration with c
 
 ---
 
-## 🌌 What is an INSR?
+## 🌌 What Is an Implicit Neural Spatial Representation (INSR)?
 
-INSR replaces the spatial discretization of fields (e.g. pressure, velocity) with a **continuous function approximated by a neural network**:
+![Implicit Neural Spatial Representation]({{ site.baseurl }}/images/img_1_insr.png)  
+*Figure 1: An INSR encodes an entire spatial field in a neural network.*
 
-$$
-x \mapsto f_\theta(x), \quad \text{where } \theta \text{ are trainable weights}
-$$
+An **Implicit Neural Spatial Representation (INSR)** is a mesh‑free way to represent any physical field—velocity, pressure, deformation, etc.—as a single continuous function approximated by a neural network.  Instead of storing values at discrete grid points or mesh vertices, we ask:
 
-At each timestep, we update this network using gradients derived from the PDE's governing equations.
+> **“Given any point in space, what is the field value there?”**
+
+---
+
+### How It Works
+
+1. **Coordinate Query**  
+   - You feed the network the coordinates of one point, e.g. `(x, y)` in 2D or `(x, y, z)` in 3D.
+
+2. **Network Inference**  
+   - A multilayer perceptron (MLP) with sinusoidal or ReLU activations processes those coordinates.  
+   - **All** of its weights jointly determine the output—there is no local “cell” or “element.”
+
+3. **Field Value Output**  
+   - The network returns the physical quantity at that location (a scalar or vector).
+
+---
+
+### Key Properties
+
+- **Continuous & Differentiable**  
+  The network defines a \(C^\infty\) function. Computing spatial gradients, divergences, or Laplacians is just auto‑diff.
+
+- **Global Support**  
+  Every weight influences the field everywhere. This global coupling lets the model capture long‑range correlations naturally.
+
+- **Fixed Memory Footprint**  
+  No matter how finely you sample the domain, you only ever store the network’s weights.
+
+- **Adaptive Detail**  
+  During training, the network learns to allocate its capacity to complex regions (shocks, vortices, contact fronts) without needing to refine a mesh.
 
 ---
 
