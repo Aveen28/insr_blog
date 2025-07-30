@@ -103,7 +103,7 @@ For our implicit spatial field representation, we adopt the **SIREN** architectu
 - **Fast convergence** during training  
 - **Captures fine spatial details** without explicit meshing  
 
-In our experiments, we fix $$(\alpha=3\)$$ and \(\beta=256\) (unless otherwise noted), balancing expressivity with computational cost. $$ \nabla_\boldsymbol{x} J(\boldsymbol{x}) $$
+In our experiments, we fix $$\alpha=3$$ and $$\beta=256$$ (unless otherwise noted), balancing expressivity with computational cost.
 
 ---
 
