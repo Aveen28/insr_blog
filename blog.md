@@ -375,7 +375,8 @@ Even without viscosity, the nonlinear advection term $$\mathbf{u}\!\cdot\nabla\m
 
 We adopt the classic Chorin‑style operator‑splitting scheme, which breaks the nonlinear, coupled system into three linear substeps per timestep:
 
-![Operator Splitting Workflow]({{ site.baseurl }}/images/img_insrs_9.png)
+![Operator Splitting Workflow]({{ site.baseurl }}/images/img_inser_9.png)
+
 *Figure 8: Chorin-Style Operator-Splitting Workflow*
 
 1. **Advection (semi‑Lagrangian):**
