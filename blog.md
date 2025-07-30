@@ -21,8 +21,11 @@ While intuitive, these classical spatial meshes carry three key downsides:
 What if we could bypass explicit meshes altogether? Enter **Implicit Neural Spatial Representations (INSRs)**—a new paradigm that encodes an entire spatial field directly in the weights of a neural network. Instead of storing values at grid nodes, we store a compact function
 
 ```math
-f_\theta(x)\colon \Omega \to \mathbb{R}^d,
+f_\theta(x)\colon \Omega \to \mathbb{R}^d
 ```
+
+and evolve its parameters θ over time using standard time integrators.
+
 ---
 
 ## 🌌 What is an INSR?
