@@ -292,7 +292,7 @@ To isolate spatial discretization effects, **both** INSR and the finite‑differ
 #### Memory–Error–Time Trade‑Off
 
 ![1D Transport: Quantitative Table]({{ site.baseurl }}/images/img_insr_6.png)  
-*Figure 5: Solution profiles of the 1D Gaussian pulse at $$t=3\,$$s (left) and $$t=12\,$$s (right), showing how INSR + midpoint (blue) preserves the amplitude and shape.*
+*Table 1: Solution profiles of the 1D Gaussian pulse at $$t=3\,$$s (left) and $$t=12\,$$s (right), showing how INSR + midpoint (blue) preserves the amplitude and shape.*
 
 - To achieve the **same** final MAE of ~$$0.003$$, the grid must increase memory by **8×**.  
 - INSR’s wall‑clock cost (hours) vs. grid (seconds) underscores the **compute vs. memory** trade‑off.
@@ -331,7 +331,7 @@ We test on a classic 2D advection benchmark: two Taylor–Green–style vortices
 #### Error over Time & Density Snapshots
 
 ![2D Transport: MSE & Density Snapshots]({{ site.baseurl }}/images/img_insr_7.png)  
-*Figure 6: Mean squared error over 100 timesteps for the 2D Taylor–Green–style two‑vortex advection, comparing INSR (blue) to the coarse grid solver (green).*
+*Figure 5: Mean squared error over 100 timesteps for the 2D Taylor–Green–style two‑vortex advection, comparing INSR (blue) to the coarse grid solver (green).*
 
 1. **MSE Curves (left):**  
    - **Ours (blue):** Mean squared error stays below $$5\times10^{-4}$$.  
@@ -344,7 +344,7 @@ We test on a classic 2D advection benchmark: two Taylor–Green–style vortices
 #### Memory–Error–Time Trade‑Off
 
 ![2D Transport: Quantitative Table]({{ site.baseurl }}/images/img_insr_8.png)  
-*Figure 7: Density magnitude snapshots of the two‑vortex field at step 100.*
+*Table 2: Density magnitude snapshots of the two‑vortex field at step 100.*
 
 - Matching INSR’s accuracy demands an **enormous** memory spike ($$\times500$$).  
 - INSR excels at capturing **multiscale** features that simple grids cannot resolve under tight budgets.
@@ -377,7 +377,7 @@ We adopt the classic Chorin‑style operator‑splitting scheme, which breaks th
 
 ![Operator Splitting Workflow]({{ site.baseurl }}/images/img_insrss_9.png)
 
-*Figure 8: Chorin-Style Operator-Splitting Workflow*
+*Figure 6: Chorin-Style Operator-Splitting Workflow*
 
 1. **Advection (semi‑Lagrangian):**
    
@@ -437,7 +437,7 @@ Both INSR and the coarse grid use ~25 KB for the velocity field:
 #### Error Growth & Velocity Fields
 
 ![Euler Error & Fields]({{ site.baseurl }}/images/img_insr_10.png)  
-*Figure 9: (Left) Mean squared error over 100 timesteps.  
+*Figure 7: (Left) Mean squared error over 100 timesteps.  
 (Right) Velocity magnitude at final step: ground truth, INSR, and grid.*
 
 - **INSR (blue):** MSE remains below $$5\times10^{-4}$$.  
@@ -447,7 +447,7 @@ Both INSR and the coarse grid use ~25 KB for the velocity field:
 #### Memory–Error–Time Trade‑Off
 
 ![Euler Quant Table]({{ site.baseurl }}/images/img_insr_11.png)  
-*Figure 10: Quantitative comparison.*
+*Table 3: Quantitative comparison.*
 
 - Achieving INSR’s final error on the grid would require **12 MB** vs. **27 KB**, a **450×** memory increase.  
 - INSR excels at capturing complex, divergence‑free flows under tight memory constraints.
@@ -503,19 +503,19 @@ By replacing the spatial mesh with an implicit neural representation $$\,\phi_\t
 ### Implementation Workflow
 
 ![Elastodynamic INSR Workflow]({{ site.baseurl }}/images/img_insr_12.png)   
-*Figure 11: INSR elastodynamic pipeline.*
+*Figure 8: INSR elastodynamic pipeline.*
 
 We define the domain, set initial/boundary conditions, sample the undeformed volume, impose collision constraints if needed, then compute the deformation via variational optimization.
 
-- **Define spatial domain**  
+- **Define spatial domain:**  
   Establish the geometric region of the object in its undeformed (reference) configuration.  
-- **Set initial & boundary conditions**  
+- **Set initial & boundary conditions:**  
   Specify the starting deformation (often identity) and any fixed or driven boundaries.  
-- **Sample undeformed domain**  
+- **Sample undeformed domain:**  
   Randomly pick a mini-batch of points inside the domain to evaluate the neural field.  
-- **Collision constraints (if applicable)**  
+- **Collision constraints:**  
   Identify points that collide with external geometry and add penalty terms to enforce contact.  
-- **Deformation computation**  
+- **Deformation computation:**  
   Optimize the network weights so that the computed deformation at each sample minimizes the variational energy (kinetic + elastic − external potentials), yielding the next time-step deformation.
 
 ### Elastic Tension Test
@@ -524,14 +524,15 @@ We first evaluate on a classic **2D tensile test**:
 
 1. **Setup:**  
    - A square block with checkerboard texture (or mesh/points)  
-   - Clamped on the left and right boundaries, tension applied slowly.  
+   - Clamped on the left and right boundaries, tension applied slowly.
+   
 2. **Representations (same memory ~56 KB):**  
    - **Ours (INSR):** SIREN MLP, $$\alpha=3$$, $$\beta=68$$.  
    - **FEM (mesh-based):** Tetrahedral mesh with 0.8 K vertices.  
    - **MPM (particle-based):** 1.7 K material points.  
 
 ![Elastic Tension Comparison]({{ site.baseurl }}/images/img_insr_13.png)  
-*Figure 12: Undeformed (top row) vs. deformed (bottom) states.*
+*Figure 9: Undeformed (top row) vs. deformed (bottom) states.*
 
 INSR (left) preserves smooth texture and avoids mesh fracture, FEM (center) shows coarseness, and MPM (right) exhibits particle clustering/fracture.
 
@@ -540,13 +541,13 @@ INSR (left) preserves smooth texture and avoids mesh fracture, FEM (center) show
 To quantify accuracy, we compare against a high-resolution FEM reference and plot the pointwise $$L_2$$ displacement error:
 
 ![Elastic Tension Error Field]({{ site.baseurl }}/images/img_insr_14.png)   
-*Figure 3: Per-point $$L_2$$ error heatmap.*
+*Figure 10: Per-point $$L_2$$ error heatmap.*
 
 INSR’s error (middle) is visibly lower and more uniform than FEM’s (right), especially near high-strain regions.
 
 ### Quantitative Results
 ![Quantitative Result Comaprison]({{ site.baseurl }}/images/img_insr_15.png) 
-*Table 1: Elastic tension test metrics.*
+*Table 4: Elastic tension test metrics.*
 
 INSR achieves over 2× lower maximum displacement error under the same memory budget, at the cost of longer runtime.
 
