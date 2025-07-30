@@ -119,7 +119,7 @@ Because the network’s weights implicitly define the field everywhere, memory u
 
 ### Time Integration
 
-Given the network weights $${\theta^k\}_{k=0}^n$$ at previous steps, we obtain the next weights $$\theta^{n+1}$$ by solving:
+Given the network weights $$\theta^k\_k=0^n$$ at previous steps, we obtain the next weights $$\theta^{n+1}$$ by solving:
 $$
 \theta^{n+1} \;=\; 
 \arg\min_{\theta}
@@ -133,7 +133,7 @@ where $$\mathcal{I}$$ is the discrete‐time integrator objective (e.g., explici
 
 To illustrate, here is the pseudocode for our integration loop:
 
-![Time Integration Algorithm]({{ site.baseurl }}/images/img_insr_4.png)  
+![Time Integration Algorithm]({{ site.baseurl }}/images/img_itsr_4.png)  
 *Algorithm 1: Time integration of network weights via mini‑batch optimization.*
 
 ### Boundary Conditions
