@@ -80,7 +80,7 @@ An **Implicit Neural Spatial Representation (INSR)** is a mesh‑free way to rep
 
 ---
 
-## Neural Network Architecture
+# Neural Network Architecture
 
 ![SIREN-based Implicit Neural Spatial Representation]({{ site.baseurl }}/images/img_insr_3.png)  
 *Figure 3: SIREN MLP architecture used for INSRs.*
@@ -88,7 +88,7 @@ An **Implicit Neural Spatial Representation (INSR)** is a mesh‑free way to rep
 For our implicit spatial field representation, we adopt the **SIREN** architecture (Sitzmann et al., 2020). SIRENs are multilayer perceptrons with **sinusoidal activations**, which excel at modeling high‑frequency details and provide smooth, infinitely differentiable outputs—ideal for PDE fields.
 
 1. **Input Encoding**  
-   - The network takes a spatial coordinate $$\((x,y)\in[-1,1]^2\)$$.  
+   - The network takes a spatial coordinate $$(x,y)\in[-1,1]^2$$.  
    - Optionally, a high‑frequency mapping lifts it into a higher‑dimensional space to help represent fine details.
 
 2. **Hidden Layers**  
@@ -98,10 +98,43 @@ For our implicit spatial field representation, we adopt the **SIREN** architectu
 3. **Output Layer**  
    - A final linear layer (optionally followed by sine) outputs the field value (e.g., velocity component or pressure).
 
-**Why SIREN?**  
+### **Why SIREN?**  
 - **High accuracy** on continuous signals  
 - **Fast convergence** during training  
 - **Captures fine spatial details** without explicit meshing  
+
+---
+
+#Time Integration on Neural Spatial Representations
+
+Our goal is to solve time‑dependent PDEs by evolving the weights of an implicit neural field. After introducing how we represent the spatial field with a neural network (Section 3.1), we now show how to step its parameters forward in time using classical integrators.
+
+### Neural Networks as Spatial Representations
+
+We encode each time‑slice of the field \(f^n(x)\) as a neural network \(f_{\theta^n}(x)\), where \(\theta^n\) are the network weights at time \(t_n\). At any query point \(x \in \Omega\), we simply evaluate:
+$$
+f^n(x) \;=\; f_{\theta^n}(x).
+$$
+Because the network’s weights implicitly define the field everywhere, memory usage depends only on \(\dim(\theta)\), not on the number of sample points.
+
+### Time Integration
+
+Given the network weights \(\{\theta^k\}_{k=0}^n\) at previous steps, we obtain the next weights \(\theta^{n+1}\) by solving:
+$$
+\theta^{n+1} \;=\; 
+\arg\min_{\theta}
+\sum_{x \in \mathcal{M}\subset\Omega}
+\mathcal{I}\bigl(\Delta t,\,
+\{f_{\theta^k}(x)\}_{k=0}^{n+1},\,
+\{\nabla f_{\theta^k}(x)\}_{k=0}^{n+1},\,\ldots\bigr)
+\quad,
+$$
+where \(\mathcal{I}\) is the discrete‐time integrator objective (e.g., explicit/implicit Euler, midpoint, variational, or operator splitting), and \(\mathcal{M}\) is a random mini‑batch of spatial samples.
+
+To illustrate, here is the pseudocode for our integration loop:
+
+![Time Integration Algorithm]({{ site.baseurl }}/images/img_insr_4.png)  
+*Algorithm 1: Time integration of network weights via mini‑batch optimization.*
 
 ---
 
