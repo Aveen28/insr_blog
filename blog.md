@@ -552,6 +552,40 @@ INSR achieves over 2× lower maximum displacement error under the same memory bu
 
 ---
 
-## 📬 Stay in Touch
+# Conclusion
 
-Check out [About Me](/about/) or connect on [GitHub](https://github.com/aveen28) for more deep learning & scientific ML content.
+In this work, we have introduced Implicit Neural Spatial Representations (INSRs) as a versatile, mesh‐free alternative for solving time-dependent PDEs. By encoding spatial fields directly in the weights of a neural network—and evolving those weights with classical time integrators—we demonstrated:
+
+- **Higher accuracy under tight memory budgets.**  
+  Across advection, incompressible Euler, and elastodynamics benchmarks, INSRs consistently outperformed grid- and mesh-based methods when constrained to the same storage footprint.
+
+- **Intrinsic adaptivity.**  
+  The global support and smoothness of neural fields automatically concentrate representational capacity on the most challenging regions, without any remeshing or adaptive data structures.
+
+- **Flexibility with time integrators.**  
+  By coupling INSRs with midpoint, implicit Euler, operator-splitting, and variational integrators, we can leverage decades of numerical analysis to tackle stiff, nonlinear, or contact-driven dynamics.
+
+- **A clear compute–memory trade-off.**  
+  While INSRs incur higher wall-clock runtimes (hours vs. seconds), they open a new point on the Pareto frontier of accuracy vs. memory, which may be preferable for simulations where storage or adaptivity are the primary bottleneck.
+
+Looking forward, promising directions include:
+
+- **Hybrid mesh–neural schemes** to combine the speed of local bases with the expressivity of global neural fields.  
+- **Hard enforcement of complex boundary conditions** via constraint-preserving architectures.  
+- **Theoretical analysis** of convergence, stability, and error bounds for INSR-based time-stepping.  
+- **Real-world applications** in fluid–structure interaction, soft robotics, and geophysical flows where adaptivity and reduced memory are critical.
+
+By uniting the strengths of neural representations with the rich heritage of classical time integrators, INSRs chart a new path for high-fidelity, memory-efficient simulation of a broad class of time-dependent phenomena.  
+
+---
+
+# References
+
+- Chen, Z. and Zhang, H. Learning implicit fields for generative shape modeling. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 5939–5948, 2019.
+- Pfaff, T., Fortunato, M., Sanchez-Gonzalez, A., and Battaglia, P. W. Learning mesh-based simulation with graph networks. arXiv preprint arXiv:2010.03409, 2020.
+- Yang, G., Belongie, S., Hariharan, B., and Koltun, V. Geometry processing with neural fields. Advances in Neural Information Processing Systems, 34, 2021.
+- Wandel, N., Weinmann, M., and Klein, R. Learning incompressible fluid dynamics from scratch–towards fast, differentiable fluid models that generalize. arXiv preprint arXiv:2006.08762, 2020. 
+- Sharp, N. and Jacobson, A. Spelunking the deep: guaranteed queries on general neural implicit surfaces via range analysis. ACM Transactions on Graphics (TOG), 41(4): 1–16, 2022.
+- Park, K., Sinha, U., Hedman, P., Barron, J. T., Bouaziz, S., Goldman, D. B., Martin-Brualla, R., and Seitz, S. M. Hypernerf: a higher-dimensional representation for topologically varying neural radiance fields. ACM Transactions on Graphics (TOG), 40(6):1–12, 2021b. 
+- Raissi, M., Perdikaris, P., and Karniadakis, G. E. Physicsinformed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations. Journal of Computational Physics, 378:686–707, 2019. 
+- Schwarz, K., Liao, Y., Niemeyer, M., and Geiger, A. Graf: Generative radiance fields for 3d-aware image synthesis. Advances in Neural Information Processing Systems, 33: 20154–20166, 2020. 
