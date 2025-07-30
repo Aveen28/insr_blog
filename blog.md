@@ -105,13 +105,13 @@ For our implicit spatial field representation, we adopt the **SIREN** architectu
 
 ---
 
-#Time Integration on Neural Spatial Representations
+# Time Integration on Neural Spatial Representations
 
-Our goal is to solve time‑dependent PDEs by evolving the weights of an implicit neural field. After introducing how we represent the spatial field with a neural network (Section 3.1), we now show how to step its parameters forward in time using classical integrators.
+Our goal is to solve time‑dependent PDEs by evolving the weights of an implicit neural field. We now show how to step its parameters forward in time using classical integrators.
 
 ### Neural Networks as Spatial Representations
 
-We encode each time‑slice of the field \(f^n(x)\) as a neural network \(f_{\theta^n}(x)\), where \(\theta^n\) are the network weights at time \(t_n\). At any query point \(x \in \Omega\), we simply evaluate:
+We encode each time‑slice of the field $$f^n(x)$$ as a neural network $$f_{\theta^n}(x)$$, where $$\theta^n$$are the network weights at time $$t_n$$. At any query point $$x \in \Omega$$, we simply evaluate:
 $$
 f^n(x) \;=\; f_{\theta^n}(x).
 $$
@@ -119,7 +119,7 @@ Because the network’s weights implicitly define the field everywhere, memory u
 
 ### Time Integration
 
-Given the network weights \(\{\theta^k\}_{k=0}^n\) at previous steps, we obtain the next weights \(\theta^{n+1}\) by solving:
+Given the network weights $${\theta^k\}_{k=0}^n$$ at previous steps, we obtain the next weights $$\theta^{n+1}$$ by solving:
 $$
 \theta^{n+1} \;=\; 
 \arg\min_{\theta}
@@ -129,12 +129,48 @@ $$
 \{\nabla f_{\theta^k}(x)\}_{k=0}^{n+1},\,\ldots\bigr)
 \quad,
 $$
-where \(\mathcal{I}\) is the discrete‐time integrator objective (e.g., explicit/implicit Euler, midpoint, variational, or operator splitting), and \(\mathcal{M}\) is a random mini‑batch of spatial samples.
+where $$\mathcal{I}$$ is the discrete‐time integrator objective (e.g., explicit/implicit Euler, midpoint, variational, or operator splitting), and $$\mathcal{M}$$ is a random mini‑batch of spatial samples.
 
 To illustrate, here is the pseudocode for our integration loop:
 
 ![Time Integration Algorithm]({{ site.baseurl }}/images/img_insr_4.png)  
 *Algorithm 1: Time integration of network weights via mini‑batch optimization.*
+
+### Boundary Conditions
+
+PDEs often come with spatial boundary conditions (e.g., Dirichlet or Neumann). We enforce these by adding a penalty term over boundary samples $$\mathcal{M}_b \subset \partial \Omega$$. Concretely, at each time step we solve:
+
+$$
+\theta^{n+1} = \arg\min_{\theta}
+\Biggl\{
+\sum_{x\in \mathcal{M}}
+\mathcal{I}\bigl(\Delta t,\{f_{\theta^k}(x)\}_{k=0}^{n+1},\ldots\bigr)
+\;+\;
+\lambda
+\sum_{x_b\in \mathcal{M}_b}
+C\bigl(f_{\theta}(x_b), \nabla f_{\theta}(x_b), \ldots\bigr)
+\Biggr\},
+$$
+
+where  
+- $$\mathcal{I}$$ is the time‐integrator loss,  
+- $$C(\cdot)$$ penalizes violation of the prescribed boundary behavior at each boundary point $$x_b$$,  
+- $$\lambda$$ balances the physics objective against boundary enforcement.
+
+---
+
+### Initial Condition
+
+To initialize the network at $$t=0$$, we fit it to a known initial field $$\hat f^0(x)$$ by minimizing the squared error over a batch of sample points $$\mathcal{M}\subset \Omega$$:
+
+$$
+\theta^0 \;=\;
+\arg\min_{\theta}
+\sum_{x\in \mathcal{M}}
+\bigl\|\,f_{\theta}(x) \;-\; \hat f^0(x)\bigr\|^2.
+$$
+
+We again solve this via Adam on mini‑batches, yielding a network whose predictions exactly match the given initial condition.  
 
 ---
 
