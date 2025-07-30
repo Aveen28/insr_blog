@@ -80,6 +80,33 @@ An **Implicit Neural Spatial Representation (INSR)** is a mesh‑free way to rep
 
 ---
 
+## Neural Network Architecture
+
+![SIREN-based Implicit Neural Spatial Representation]({{ site.baseurl }}/images/img_insr_3.png)  
+*Figure 3: SIREN MLP architecture used for INSRs.*
+
+For our implicit spatial field representation, we adopt the **SIREN** architecture (Sitzmann et al., 2020). SIRENs are multilayer perceptrons with **sinusoidal activations**, which excel at modeling high‑frequency details and provide smooth, infinitely differentiable outputs—ideal for PDE fields.
+
+1. **Input Encoding**  
+   - The network takes a spatial coordinate \((x,y)\in[-1,1]^2\).  
+   - Optionally, a high‑frequency mapping lifts it into a higher‑dimensional space to help represent fine details.
+
+2. **Hidden Layers**  
+   - We use **α hidden layers**, each with **β neurons**.  
+   - After each linear layer, a sine activation allows the network to capture oscillatory patterns and sharp transitions.
+
+3. **Output Layer**  
+   - A final linear layer (optionally followed by sine) outputs the field value (e.g., velocity component or pressure).
+
+**Why SIREN?**  
+- **High accuracy** on continuous signals  
+- **Fast convergence** during training  
+- **Captures fine spatial details** without explicit meshing  
+
+In our experiments, we fix \(\alpha=3\) and \(\beta=256\) (unless otherwise noted), balancing expressivity with computational cost.
+
+---
+
 ## ⚙️ Method Overview
 
 - Neural network encodes the spatial field at each timestep
