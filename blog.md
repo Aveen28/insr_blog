@@ -12,15 +12,7 @@ Solving time‑dependent partial differential equations (PDEs) is fundamental to
 1. **Time stepping**: where the system’s state is advanced in small increments to capture its temporal evolution.  
 2. **Spatial discretization**: where the continuous physical domain is broken into a finite set of points or elements (grids, meshes, or particles) so that the underlying equations can be solved numerically.
 
-What if we could remove the mesh entirely and let a single, flexible model represent the spatial field? That’s the promise of **Implicit Neural Spatial Representations (INSRs)**. Rather than assigning a variable to each node in a mesh, we represent the entire field whether it’s fluid velocity, pressure, or material displacement as a continuous function encoded in the weights of a neural network. As the simulation marches forward in time, we simply update the network’s parameters according to the governing physics, using well‑established time integrators like explicit or implicit schemes.
-
-This mesh‑free approach brings three standout benefits:
-
-- **Fixed memory footprint**: the network’s size stays constant, regardless of how “smooth” or “complex” the solution becomes.  
-- **Adaptive resolution**: the neural network can automatically allocate capacity to where it’s needed most, without the overhead of remeshing.  
-- **Self‑contained solver**: no external training data is required INSR learns the solution “on the fly” by minimizing the physics residual itself.
-
-In this post, we’ll dive into how INSRs work, explore their integration with classic time‑stepping methods, and showcase benchmark results on advection, turbulent vortex flows, and nonlinear elastic deformations. While INSRs may demand more computation per time step, they deliver higher accuracy, lower memory usage, and a simplicity of implementation that opens new doors for scientific simulation. Let’s explore this exciting frontier in mesh‑free numerical methods.  
+What if we could remove the mesh entirely and let a single, flexible model represent the spatial field? That’s the promise of **Implicit Neural Spatial Representations (INSRs)**. Rather than assigning a variable to each node in a mesh, we represent the entire field whether it’s fluid velocity, pressure, or material displacement as a continuous function encoded in the weights of a neural network. As the simulation marches forward in time, we simply update the network’s parameters according to the governing physics, using well‑established time integrators like explicit or implicit schemes. 
 
 ---
 
