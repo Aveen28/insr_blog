@@ -135,7 +135,7 @@ where $$\mathcal{I}$$ is the discrete‐time integrator objective (e.g., explici
 
 To illustrate, here is the pseudocode for our integration loop:
 
-![Time Integration Algorithm]({{ site.baseurl }}/images/img_itsr_4.png)  
+![Time Integration Algorithm]({{ site.baseurl }}/images/img_itsrs_4.png)  
 *Algorithm 1: Time integration of network weights via mini‑batch optimization.*
 
 ### Boundary Conditions
