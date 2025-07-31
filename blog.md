@@ -91,25 +91,6 @@ The **advection equation** is one of the simplest time‑dependent PDEs, yet it 
 
 Despite its linearity, discretizing this equation on a mesh often introduces **numerical diffusion** (smearing of sharp features) or **numerical dispersion** (unphysical oscillations). Our goal is to show how an Implicit Neural Spatial Representation (INSR) can **dramatically reduce diffusion**, under tight memory budgets, at the cost of extra compute.
 
-#### Time Integrators
-
-**Midpoint Rule** (second‑order, energy preserving):  
-
-$$
-u^{n+1}(x) = u^n(x) \;+\; \Delta t\,\bigl[a\cdot\nabla\bigl(\tfrac{u^n(x)+u^{n+1}(x)}{2}\bigr)\bigr].
-$$
-
-- On the grid, this is a linear solve per step.  
-- In INSR, we **optimize** $$\theta$$ so that the above residual is minimized over a set of sample points $$\mathcal{M}$$.
-
-**Implicit Euler** (first‑order, dissipative):  
-
-$$
-u^{n+1}(x) = u^n(x) \;+\; \Delta t\,\bigl[a\cdot\nabla u^{n+1}(x)\bigr].
-$$
-
-- We include this variant (“Ours–implicit”) to illustrate the effect of artificial damping.
-
 Below, we evaluate INSR on two canonical testbeds: a 1D Gaussian pulse and a 2D two‑vortex flow.
 
 #### 1.1 1D Gaussian Pulse
@@ -154,19 +135,8 @@ To isolate spatial discretization effects, **both** INSR and the finite‑differ
 ![1D Transport: MAE & Wave Snapshots]({{ site.baseurl }}/images/img_insr__5.png)  
 *Figure 4: (Left) Mean absolute error over time. (Center) Profiles at $$t=3\,$$s. (Right) Profiles at $$t=12\,$$s.*
 
-1. **MAE Curves (left panel):**  
-   - **Ours (midpoint, blue):** MAE remains nearly flat under $$0.005$$ throughout $$12\,$$s, showing **virtually no diffusion**.  
-   - **Grid (same memory, green):** MAE climbs steadily to ~$$0.015$$, reflecting pulse broadening.  
-   - **Ours (implicit, yellow):** MAE grows to ~$$0.08$$, demonstrating **excessive damping** from implicit Euler.
-
-2. **Profiles at $$t=3\,$$s (center panel):**  
-   - The midpoint INSR (blue) overlays the exact Gaussian (grey).  
-   - The grid (green) shows slight broadening and amplitude loss.  
-   - The implicit INSR (yellow) is noticeably lower in amplitude.
-
-3. **Profiles at $$t=12\,$$s (right panel):**  
-   - The blue curve remains sharp and centered, whereas the green grid solution is markedly smeared.  
-   - The yellow curve is almost flat, indicating near‑total dissipation.
+1. **Error Growth:** INSR with midpoint integration keeps MAE ≲ 0.005 over 12 s (minimal diffusion), while the grid rises to ~0.015 and INSR‐implicit to ~0.08.  
+2. **Wave Preservation:** At both 3 s and 12 s, INSR‐midpoint exactly tracks the Gaussian pulse; the grid smears it progressively, and INSR‐implicit nearly dissipates it completely.  
   
 ##### Memory–Error–Time Trade‑Off
 
@@ -405,7 +375,7 @@ INSR achieves over 2× lower maximum displacement error under the same memory bu
 
 ## Conclusion
 
-In this work, we introduced Implicit Neural Spatial Representations (INSRs) as a mesh-free approach for time-dependent PDEs. By encoding fields in neural network weights and evolving them with classical integrators, INSRs deliver higher accuracy under tight memory budgets and adaptivity without remeshing. Coupled with a variety of time steppers—midpoint, implicit Euler, operator-splitting, and variational—INSRs handle stiff, nonlinear, and contact-driven dynamics. While runtime is higher, the trade-off favors scenarios where memory or adaptivity is paramount. Future directions include hybrid mesh–neural methods, hard enforcement of boundary constraints, theoretical analysis of convergence, and applications in fluid–structure interaction and soft robotics.
+In this work, we introduced Implicit Neural Spatial Representations (INSRs) as a mesh-free approach for time-dependent PDEs. By encoding fields in neural network weights and evolving them with classical integrators, INSRs deliver higher accuracy under tight memory budgets and adaptivity without remeshing. Coupled with a variety of time steppers—midpoint, implicit Euler, operator-splitting, and variational INSRs handle stiff, nonlinear, and contact driven dynamics. While runtime is higher, the trade-off favors scenarios where memory or adaptivity is paramount. Future directions include hybrid mesh neural methods, hard enforcement of boundary constraints, theoretical analysis of convergence, and applications in fluid–structure interaction and soft robotics.
 
 ---
 
