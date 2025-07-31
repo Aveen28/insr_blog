@@ -445,7 +445,7 @@ Both INSR and the coarse grid use ~25 KB for the velocity field:
 
 #### Memory–Error–Time Trade‑Off
 
-![Euler Quant Table]({{ site.baseurl }}/images/img_insr_11.png)  
+![Euler Quant Table]({{ site.baseurl }}/images/img_insrs_11.png)  
 *Table 3: Quantitative comparison.*
 
 - Achieving INSR’s final error on the grid would require **12 MB** vs. **27 KB**, a **450×** memory increase.  
