@@ -286,19 +286,9 @@ Each substep minimizes its residual over a random batch of points $$\mathcal{M}\
 
 #### Taylor–Green Vortex Benchmark
 
-The Taylor–Green vortex is a classic analytical solution to the incompressible Euler equations in two dimensions. It’s widely used as a benchmark because:
+The Taylor–Green vortex is a classic analytical solution to the incompressible Euler equations in two dimensions. Although the initial condition is smooth, the interacting vortices place stress on your spatial discretization: if your mesh (or neural representation) is too coarse or too diffusive, the smaller-scale features will wash out or degrade over time.
 
-1. **Closed-form solution:**
-   You know the exact velocity field at any time, so you can measure numerical error directly.
-
-2. **No external forcing or viscosity:**
-   With ρ=1 and g=0, the equations reduce to pure advection plus pressure projection, making it a clean test of your solver’s ability to handle non-linear advection and maintain incompressibility.
-
-3. **Multiscale challenge:**
-   Although the initial condition is smooth, the interacting vortices place stress on your spatial discretization: if your mesh (or neural representation) is too coarse or too diffusive, the smaller-scale features will wash out or degrade over time.
-
-You know the exact velocity field at any time, so you can measure numerical error directly.
-We validate on the 2D Taylor–Green vortex (zero viscosity) with analytical solution  
+You know the exact velocity field at any time, so you can measure numerical error directly.We validate on the 2D Taylor–Green vortex (zero viscosity) with analytical solution  
 
 $$
 \mathbf{u}(x,y,t) = \bigl(\sin x\cos y,\,-\cos x\sin y\bigr), 
@@ -378,24 +368,6 @@ $$
 
 By replacing the spatial mesh with an implicit neural representation $$\,\phi_\theta(x)\,$$, we solve the above minimization for the network weights $$\theta$$ at each timestep.
 
-#### Implementation Workflow
-
-![Elastodynamic INSR Workflow]({{ site.baseurl }}/images/img_insrs_12.png)   
-*Figure 8: INSR elastodynamic pipeline.*
-
-We define the domain, set initial/boundary conditions, sample the undeformed volume, impose collision constraints if needed, then compute the deformation via variational optimization.
-
-- **Define spatial domain:**  
-  Establish the geometric region of the object in its undeformed (reference) configuration.  
-- **Set initial & boundary conditions:**  
-  Specify the starting deformation (often identity) and any fixed or driven boundaries.  
-- **Sample undeformed domain:**  
-  Randomly pick a mini-batch of points inside the domain to evaluate the neural field.  
-- **Collision constraints:**  
-  Identify points that collide with external geometry and add penalty terms to enforce contact.  
-- **Deformation computation:**  
-  Optimize the network weights so that the computed deformation at each sample minimizes the variational energy (kinetic + elastic − external potentials), yielding the next time-step deformation.
-
 #### Elastic Tension Test
 
 We first evaluate on a classic **2D tensile test**:
@@ -410,7 +382,7 @@ We first evaluate on a classic **2D tensile test**:
    - **MPM (particle-based):** 1.7 K material points.  
 
 ![Elastic Tension Comparison]({{ site.baseurl }}/images/img_insr_13.png)  
-*Figure 9: Undeformed (top row) vs. deformed (bottom) states.*
+*Figure 8: Undeformed (top row) vs. deformed (bottom) states.*
 
 INSR (left) preserves smooth texture and avoids mesh fracture, FEM (center) shows coarseness, and MPM (right) exhibits particle clustering/fracture.
 
@@ -419,7 +391,7 @@ INSR (left) preserves smooth texture and avoids mesh fracture, FEM (center) show
 To quantify accuracy, we compare against a high-resolution FEM reference and plot the pointwise $$L_2$$ displacement error:
 
 ![Elastic Tension Error Field]({{ site.baseurl }}/images/img_insr_14.png)   
-*Figure 10: Per-point $$L_2$$ error heatmap.*
+*Figure 9: Per-point $$L_2$$ error heatmap.*
 
 INSR’s error (middle) is visibly lower and more uniform than FEM’s (right), especially near high-strain regions.
 
@@ -433,9 +405,7 @@ INSR achieves over 2× lower maximum displacement error under the same memory bu
 
 ## Conclusion
 
-In this work, we have introduced Implicit Neural Spatial Representations (INSRs) as a versatile, mesh‐free alternative for solving time‐dependent PDEs. By encoding spatial fields directly in the weights of a neural network and evolving those weights with classical time integrators, we demonstrated that INSRs can achieve markedly higher accuracy under tight memory budgets, consistently outperforming grid- and mesh-based methods across advection, incompressible Euler, and elastodynamics benchmarks. Their global support and smoothness confer intrinsic adaptivity—neural fields automatically concentrate representational capacity on the most challenging regions without any remeshing or adaptive data structures. 
-
-Furthermore, by coupling INSRs with a range of integrators (midpoint, implicit Euler, operator-splitting, and variational), we leverage decades of numerical analysis to tackle stiff, nonlinear, or contact-driven dynamics. Although INSRs incur higher wall-clock runtimes (hours versus seconds), they open up a new point on the Pareto frontier of accuracy versus memory, making them especially attractive for simulations where storage or adaptivity are the primary bottleneck. Looking ahead, promising directions include hybrid mesh–neural schemes that blend the speed of local bases with the expressivity of global neural fields, hard enforcement of complex boundary conditions via constraint-preserving architectures, rigorous theoretical analyses of convergence and stability, and real-world applications in fluid–structure interaction, soft robotics, and geophysical flows where adaptivity and reduced memory footprints are critical. By uniting the strengths of neural representations with the rich heritage of classical time integrators, INSRs chart a new path toward high-fidelity, memory-efficient simulation of a broad class of time-dependent phenomena.
+In this work, we introduced Implicit Neural Spatial Representations (INSRs) as a mesh-free approach for time-dependent PDEs. By encoding fields in neural network weights and evolving them with classical integrators, INSRs deliver higher accuracy under tight memory budgets and adaptivity without remeshing. Coupled with a variety of time steppers—midpoint, implicit Euler, operator-splitting, and variational—INSRs handle stiff, nonlinear, and contact-driven dynamics. While runtime is higher, the trade-off favors scenarios where memory or adaptivity is paramount. Future directions include hybrid mesh–neural methods, hard enforcement of boundary constraints, theoretical analysis of convergence, and applications in fluid–structure interaction and soft robotics.
 
 ---
 
