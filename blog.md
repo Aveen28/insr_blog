@@ -76,11 +76,6 @@ For our implicit spatial field representation, we adopt the **SIREN** architectu
 3. **Output Layer**  
    - A final linear layer (optionally followed by sine) outputs the field value (e.g., velocity component or pressure).
 
-### **Why SIREN?**  
-- **High accuracy** on continuous signals  
-- **Fast convergence** during training  
-- **Captures fine spatial details** without explicit meshing  
-
 ---
 
 # Time Integration on Neural Spatial Representations
