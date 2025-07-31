@@ -318,26 +318,6 @@ $$
 
 where $$\Sigma$$ are the singular values of $$F$$, and $$(\lambda,\mu)$$ are the Lamé parameters.
 
-#### Variational Time Integration
-
-We adopt a **variational integrator** that marches the deformation and velocity forward by minimizing the incremental action:
-
-$$
-I(\phi^{n+1}) \;=\;
-\underbrace{\tfrac12\,\rho_0\bigl\|\dot\phi^{n+1} - \dot\phi^n\bigr\|^2}_{\text{kinetic energy}}
-\;+\;
-\underbrace{\Psi\bigl(\phi^{n+1}\bigr)}_{\text{elastic energy}}
-\;-\;
-\underbrace{\rho_0\,b^T\,\phi^{n+1}}_{\substack{\text{external}\\[-3pt]\text{force potential}}},
-$$
-
-with
-$$
-\dot\phi^{n+1} \;=\;\frac{\phi^{n+1}-\phi^n}{\Delta t}\,
-$$
-
-By replacing the spatial mesh with an implicit neural representation $$\,\phi_\theta(x)\,$$, we solve the above minimization for the network weights $$\theta$$ at each timestep.
-
 #### Elastic Tension Test
 
 We first evaluate on a classic **2D tensile test**:
