@@ -353,26 +353,11 @@ INSR achieves over 2× lower maximum displacement error under the same memory bu
 
 ---
 
-In this work, we have introduced Implicit Neural Spatial Representations (INSRs) as a versatile, mesh‐free alternative for solving time-dependent PDEs. By encoding spatial fields directly in the weights of a neural network and evolving those weights with classical time integrators we demonstrated:
+## Conclusion
 
-- **Higher accuracy under tight memory budgets.**  
-  Across advection, incompressible Euler, and elastodynamics benchmarks, INSRs consistently outperformed grid- and mesh-based methods when constrained to the same storage footprint.
+In this work, we introduced Implicit Neural Spatial Representations (INSRs) as a mesh-free approach for solving time-dependent PDEs. By encoding spatial fields directly in the weights of a neural network and evolving those weights with classical time integrators, we showed that INSRs consistently deliver higher accuracy under tight memory constraints across advection, incompressible Euler, and elastodynamic benchmarks. Their global, smooth basis grants intrinsic adaptivity automatically focusing representational capacity on the most challenging regions without remeshing or adaptive data structures while coupling seamlessly to a variety of integrators (midpoint, implicit Euler, operator-splitting, and variational). 
 
-- **Intrinsic adaptivity.**  
-  The global support and smoothness of neural fields automatically concentrate representational capacity on the most challenging regions, without any remeshing or adaptive data structures.
-
-- **Flexibility with time integrators.**  
-  By coupling INSRs with midpoint, implicit Euler, operator-splitting, and variational integrators, we can leverage decades of numerical analysis to tackle stiff, nonlinear, or contact-driven dynamics.
-
-- **A clear compute–memory trade-off.**  
-  While INSRs incur higher wall-clock runtimes (hours vs. seconds), they open a new point on the Pareto frontier of accuracy vs. memory, which may be preferable for simulations where storage or adaptivity are the primary bottleneck.
-
-Looking forward, promising directions include:
-
-- **Hybrid mesh–neural schemes** to combine the speed of local bases with the expressivity of global neural fields.  
-- **Hard enforcement of complex boundary conditions** via constraint-preserving architectures.  
-- **Theoretical analysis** of convergence, stability, and error bounds for INSR-based time-stepping.  
-- **Real-world applications** in fluid–structure interaction, soft robotics, and geophysical flows where adaptivity and reduced memory are critical.
+Looking ahead, exciting avenues include hybrid mesh–neural schemes that blend local speed with global expressivity, architectures that enforce complex boundary conditions exactly, rigorous theoretical studies of convergence and stability, and real-world deployment in fluid–structure interaction, soft robotics, and geophysical flows where both adaptivity and memory efficiency are paramount.
 
 ---
 
