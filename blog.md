@@ -56,20 +56,6 @@ An **Implicit Neural Spatial Representation (INSR)** is a mesh‑free way to rep
    - The network returns the physical quantity at that location (a scalar or vector).
 
 
-### Key Properties
-
-- **Continuous & Differentiable**  
-  The network defines a function. Computing spatial gradients, divergences, or Laplacians is just auto‑diff.
-
-- **Global Support**  
-  Every weight influences the field everywhere. This global coupling lets the model capture long‑range correlations naturally.
-
-- **Fixed Memory Footprint**  
-  No matter how finely you sample the domain, you only ever store the network’s weights.
-
-- **Adaptive Detail**  
-  During training, the network learns to allocate its capacity to complex regions (shocks, vortices, contact fronts) without needing to refine a mesh.
-
 ---
 
 # Neural Network Architecture
