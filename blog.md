@@ -9,8 +9,8 @@ excerpt_separator: "<!--more-->"
 
 Solving time‑dependent partial differential equations (PDEs) is fundamental to understanding and predicting a wide range of real‑world processes from the sweeping currents in the atmosphere and oceans to the flexing and cracking of materials under stress. At their core, these simulations require two key steps:
 
-1. **Time stepping**, where the system’s state is advanced in small increments to capture its temporal evolution.  
-2. **Spatial discretization**, where the continuous physical domain is broken into a finite set of points or elements (grids, meshes, or particles) so that the underlying equations can be solved numerically.
+1. **Time stepping**: where the system’s state is advanced in small increments to capture its temporal evolution.  
+2. **Spatial discretization**: where the continuous physical domain is broken into a finite set of points or elements (grids, meshes, or particles) so that the underlying equations can be solved numerically.
 
 What if we could remove the mesh entirely and let a single, flexible model represent the spatial field? That’s the promise of **Implicit Neural Spatial Representations (INSRs)**. Rather than assigning a variable to each node in a mesh, we represent the entire field whether it’s fluid velocity, pressure, or material displacement as a continuous function encoded in the weights of a neural network. As the simulation marches forward in time, we simply update the network’s parameters according to the governing physics, using well‑established time integrators like explicit or implicit schemes.
 
@@ -82,7 +82,7 @@ An **Implicit Neural Spatial Representation (INSR)** is a mesh‑free way to rep
 
 # Neural Network Architecture
 
-![SIREN-based Implicit Neural Spatial Representation]({{ site.baseurl }}/images/img_insr_3.png)  
+![SIREN-based Implicit Neural Spatial Representation]({{ site.baseurl }}/images/img_insrs_3.png)  
 *Figure 3: SIREN MLP architecture used for INSRs.*
 
 For our implicit spatial field representation, we adopt the **SIREN** architecture. SIRENs are multilayer perceptrons with **sinusoidal activations**, which excel at modeling high‑frequency details and provide smooth, infinitely differentiable outputs ideal for PDE fields.
@@ -291,7 +291,7 @@ To isolate spatial discretization effects, **both** INSR and the finite‑differ
   
 #### Memory–Error–Time Trade‑Off
 
-![1D Transport: Quantitative Table]({{ site.baseurl }}/images/img_insr_6.png)  
+![1D Transport: Quantitative Table]({{ site.baseurl }}/images/img_insrs_6.png)  
 *Table 1: Solution profiles of the 1D Gaussian pulse at $$t=3\,$$s (left) and $$t=12\,$$s (right), showing how INSR + midpoint (blue) preserves the amplitude and shape.*
 
 - To achieve the **same** final MAE of ~$$0.003$$, the grid must increase memory by **8×**.  
@@ -343,7 +343,7 @@ We test on a classic 2D advection benchmark: two Taylor–Green–style vortices
 
 #### Memory–Error–Time Trade‑Off
 
-![2D Transport: Quantitative Table]({{ site.baseurl }}/images/img_insr_8.png)  
+![2D Transport: Quantitative Table]({{ site.baseurl }}/images/img_insrs_8.png)  
 *Table 2: Density magnitude snapshots of the two‑vortex field at step 100.*
 
 - Matching INSR’s accuracy demands an **enormous** memory spike ($$\times500$$).  
@@ -375,7 +375,7 @@ Even without viscosity, the nonlinear advection term $$\mathbf{u}\!\cdot\nabla\m
 
 We adopt the classic Chorin‑style operator‑splitting scheme, which breaks the nonlinear, coupled system into three linear substeps per timestep:
 
-![Operator Splitting Workflow]({{ site.baseurl }}/images/img_insrss_9.png)
+![Operator Splitting Workflow]({{ site.baseurl }}/images/img_ins_9.png)
 
 *Figure 6: Chorin-Style Operator-Splitting Workflow*
 
@@ -501,7 +501,7 @@ By replacing the spatial mesh with an implicit neural representation $$\,\phi_\t
 
 ### Implementation Workflow
 
-![Elastodynamic INSR Workflow]({{ site.baseurl }}/images/img_insr_12.png)   
+![Elastodynamic INSR Workflow]({{ site.baseurl }}/images/img_insrs_12.png)   
 *Figure 8: INSR elastodynamic pipeline.*
 
 We define the domain, set initial/boundary conditions, sample the undeformed volume, impose collision constraints if needed, then compute the deformation via variational optimization.
@@ -545,7 +545,7 @@ To quantify accuracy, we compare against a high-resolution FEM reference and plo
 INSR’s error (middle) is visibly lower and more uniform than FEM’s (right), especially near high-strain regions.
 
 ### Quantitative Results
-![Quantitative Result Comaprison]({{ site.baseurl }}/images/img_insr_15.png) 
+![Quantitative Result Comaprison]({{ site.baseurl }}/images/img_insrs_15.png) 
 *Table 4: Elastic tension test metrics.*
 
 INSR achieves over 2× lower maximum displacement error under the same memory budget, at the cost of longer runtime.
