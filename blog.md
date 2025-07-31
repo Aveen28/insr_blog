@@ -14,14 +14,6 @@ Solving time‑dependent partial differential equations (PDEs) is fundamental to
 
 What if we could remove the mesh entirely and let a single, flexible model represent the spatial field? That’s the promise of **Implicit Neural Spatial Representations (INSRs)**. Rather than assigning a variable to each node in a mesh, we represent the entire field whether it’s fluid velocity, pressure, or material displacement as a continuous function encoded in the weights of a neural network. As the simulation marches forward in time, we simply update the network’s parameters according to the governing physics, using well‑established time integrators like explicit or implicit schemes.
 
-This mesh‑free approach brings three standout benefits:
-
-- **Fixed memory footprint**: the network’s size stays constant, regardless of how “smooth” or “complex” the solution becomes.  
-- **Adaptive resolution**: the neural network can automatically allocate capacity to where it’s needed most, without the overhead of remeshing.  
-- **Self‑contained solver**: no external training data is required INSR learns the solution “on the fly” by minimizing the physics residual itself.
-
-In this post, we’ll dive into how INSRs work, explore their integration with classic time‑stepping methods, and showcase benchmark results on advection, turbulent vortex flows, and nonlinear elastic deformations. While INSRs may demand more computation per time step, they deliver higher accuracy, lower memory usage, and a simplicity of implementation that opens new doors for scientific simulation. Let’s explore this exciting frontier in mesh‑free numerical methods.  
-
 ---
 
 # Why Rethink Classical PDE Solvers?
@@ -36,8 +28,6 @@ While well‑studied, this two‑step process suffers from:
 - **Stability constraints** on timestep size  
 - **Artificial dissipation or dispersion**  
 - **High computational cost** at fine resolution  
-
-This motivates our search for a mesh‑free spatial representation enter INSR in the next section.
 
 ---
 
@@ -63,21 +53,6 @@ An **Implicit Neural Spatial Representation (INSR)** is a mesh‑free way to rep
 3. **Field Value Output**  
    - The network returns the physical quantity at that location (a scalar or vector).
 
-
-### Key Properties
-
-- **Continuous & Differentiable**  
-  The network defines a function. Computing spatial gradients, divergences, or Laplacians is just auto‑diff.
-
-- **Global Support**  
-  Every weight influences the field everywhere. This global coupling lets the model capture long‑range correlations naturally.
-
-- **Fixed Memory Footprint**  
-  No matter how finely you sample the domain, you only ever store the network’s weights.
-
-- **Adaptive Detail**  
-  During training, the network learns to allocate its capacity to complex regions (shocks, vortices, contact fronts) without needing to refine a mesh.
-
 ---
 
 # Neural Network Architecture
@@ -97,11 +72,6 @@ For our implicit spatial field representation, we adopt the **SIREN** architectu
 
 3. **Output Layer**  
    - A final linear layer (optionally followed by sine) outputs the field value (e.g., velocity component or pressure).
-
-### **Why SIREN?**  
-- **High accuracy** on continuous signals  
-- **Fast convergence** during training  
-- **Captures fine spatial details** without explicit meshing  
 
 ---
 
@@ -138,67 +108,11 @@ To illustrate, here is the pseudocode for our integration loop:
 ![Time Integration Algorithm]({{ site.baseurl }}/images/img_itsrs_4.png)  
 *Algorithm 1: Time integration of network weights via mini‑batch optimization.*
 
-### Boundary Conditions
-
-PDEs often come with spatial boundary conditions (e.g., Dirichlet or Neumann). We enforce these by adding a penalty term over boundary samples $$\mathcal{M}_b \subset \partial \Omega$$. Concretely, at each time step we solve:
-
-$$
-\theta^{n+1} = \arg\min_{\theta}
-\Biggl\{
-\sum_{x\in \mathcal{M}}
-\mathcal{I}\bigl(\Delta t,\{f_{\theta^k}(x)\}_{k=0}^{n+1},\ldots\bigr)
-\;+\;
-\lambda
-\sum_{x_b\in \mathcal{M}_b}
-C\bigl(f_{\theta}(x_b), \nabla f_{\theta}(x_b), \ldots\bigr)
-\Biggr\},
-$$
-
-where  
-- $$\mathcal{I}$$ is the time‐integrator loss,  
-- $$C(\cdot)$$ penalizes violation of the prescribed boundary behavior at each boundary point $$x_b$$,  
-- $$\lambda$$ balances the physics objective against boundary enforcement.
-
-### Initial Condition
-
-To initialize the network at $$t=0$$, we fit it to a known initial field $$\hat f^0(x)$$ by minimizing the squared error over a batch of sample points $$\mathcal{M}\subset \Omega$$:
-
-$$
-\theta^0 \;=\;
-\arg\min_{\theta}
-\sum_{x\in \mathcal{M}}
-\bigl\|\,f_{\theta}(x) \;-\; \hat f^0(x)\bigr\|^2.
-$$
-
-We again solve this via Adam on mini‑batches, yielding a network whose predictions exactly match the given initial condition.  
-
 ---
 
 # Method Overview
 
-We evaluate our INSR‑based solver across three canonical time‑dependent PDEs. Each will be treated in detail in the following sections, with full equations and algorithmic specifics.
-
-### 1. Advection Equation  
-A linear transport problem where a scalar field $$u(x,t)$$ is carried along by a prescribed velocity.  
-- **Physical phenomenon**: Passive tracers, pollutant transport, level‑set propagation  
-- **Key challenge**: Avoiding numerical diffusion and preserving sharp features over long time marches  
-- **Our approach**: We embed $$u(x)$$ in a SIREN network and step forward via an energy‑preserving midpoint or implicit Euler integrator, solving a small optimization at each timestep  
-
-### 2. Incompressible Euler Equations  
-The governing equations for ideal (inviscid), divergence‑free fluid flow.  
-- **Physical phenomenon**: Vortex dynamics, turbulence onset, vortex–vortex interactions  
-- **Key challenge**: Enforcing incompressibility $$\nabla \!\cdot\! u = 0$$ while capturing multiscale vortical structures without excessive smoothing  
-- **Our approach**: We represent velocity and pressure each as implicit neural fields, then apply a Chorin‑style operator‑splitting (advection, pressure projection, velocity correction), each cast as an optimization over network weights  
-
-### 3. Elastodynamic Equation  
-The second‑order PDE describing large deformations in hyperelastic solids.  
-- **Physical phenomenon**: Vibrations, wave propagation, contact and impacts in elastic bodies  
-- **Key challenge**: Balancing kinetic and elastic energies, handling collisions or contact constraints without remeshing  
-- **Our approach**: We encode the deformation map $$\varphi(x)$$ in a neural network and perform variational time integration (discrete Hamilton’s principle) by minimizing an incremental potential at each timestep, augmented with soft contact penalties  
-
-*The mathematical formulations, sampling strategies, and hyperparameter settings for each method are detailed in the following sections.*  
-
----
+We evaluate our INSR‑based solver across three canonical time‑dependent PDEs.
 
 # 1. Advection Equation
 
